@@ -35,39 +35,45 @@ any plain old mexximp scene struct, by any means
 
 ## Style
 
-- Style name
-- renderer config mappings
-- material mappings to cycle over materials
-- mesh bless selector to cycle over meshes
-- illuminant spectra to cycle over blessed meshes
+Data
+ - Style name
+ - renderer config mappings
+ - material mappings to cycle over materials
+ - mesh bless selector to cycle over meshes
+ - illuminant spectra to cycle over blessed meshes
 
-- Util to make a well-formed Style struct.
-- Util to make an all-mat Style struct from diffuse reflectances.
-- Util to make an all-black-or-uniform-emitter Style struct.
+Operations
+ - Util to make a well-formed Style struct
+ - Util to make an all-matte Style struct from diffuse reflectances
+ - Util to make an all-black-or-uniform-emitter Style struct
 
 ## Combo
 
-Combo name
-Asset struct
-Style struct
+Data
+ - Combo name
+ - Asset struct
+ - Style struct
 
-Util to make a well-formed Combo struct
+Operations
+ - Util to make a well-formed Combo struct
 
 ## VirtualScene
 
-VirtualScene name
-outer Combo
-inner Combos
-inner Combo transformations
+Data
+ - VirtualScene name
+ - outer Combo
+ - inner Combos
+ - inner Combo transformations
 
-Util to make a well-formed VirtualScene struct.  Inner optional.
+Operations
+ - Util to make a well-formed VirtualScene struct.  Inner optional.
 
 ## RenderToolbox4
 
-Util to make a Recipe from a VirtualScene plus hints.  Auto conditions and mappings files.
+Operations
+ - Util to make a Recipe from a VirtualScene plus hints.  Auto conditions and mappings files.
 Leave remodeler functions open and optional for the user.
-
-Utils to get renderer config mappings for quick, full, factoid, etc.
+ - Utils to get renderer config mappings for quick, full, factoid, etc.
 
 ## General Keep-in-Mind
 

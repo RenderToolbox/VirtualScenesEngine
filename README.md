@@ -14,7 +14,7 @@ Assimp/mexximp helps us load, manipulate, and interrogate our mesh geometry asse
 
 So, one leverage factor comes from re-combining assets to produce various mexximp structs.
 
-Wand some pictures of re-combined assets under "boring" rendering.
+Want some pictures of re-combined assets under "boring" rendering.
 
 VSE adds the concept of a "Style" which is orthogonal to the assets. Style includes materials and light spectra that can be applied to the assets, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
 
@@ -25,7 +25,7 @@ This cycling approach should support full control over style elements that are a
 So, an additional leveraging factor comes from crossing scenes with styles to produce 
 various combos.
 
-Wand some pictures of the same assets rendered with different styles.
+Want some pictures of the same assets rendered with different styles.
 
 VirtualScenesEngine is intended to work with RenderToolbox4.  Assets and scenes are loaded loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expresset as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Assets and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
 

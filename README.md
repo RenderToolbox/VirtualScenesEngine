@@ -18,7 +18,7 @@ Wand some pictures of re-combined assets under "boring" rendering.
 
 VSE adds the concept of a "Style" which is orthogonal to the assets. Style includes materials and light spectra that can be applied to the assets, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
 
-To keep style separable from assets, style elements are "cycled" over an asset struct.  For example, imagine an asset that contains lots of materials and a style defines only a few.  When the style is applied to the asset, the materials in the style are re-cycled from the beginning until they cover all materials in the asset.  The same cycling idea applies to lights and light spectra, as well as materials.
+To keep style separable from assets, style elements are "cycled" over an asset struct.  For example, imagine an asset that contains lots of materials, and a style that defines only a few.  When the style is applied to the asset, the materials in the style are re-cycled from the beginning until they cover all materials in the asset.  The same cycling idea applies to lights and light spectra, as well as materials.
 
 This cycling approach should support full control over style elements that are assigned to a scene: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on few elements, or just one.
 

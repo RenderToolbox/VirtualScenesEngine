@@ -14,6 +14,8 @@ Assimp/mexximp helps us load, manipulate, and interrogate our assets. This is mo
 
 So, one leverage factor comes from re-combining assets to produce various mexximp structs.
 
+Wand some pictures of re-combined assets under "boring" rendering.
+
 VSE adds the concept of a "Style" which is orthogonal to the assets. Style includes materials and light spectra that can be applied to the assets, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
 
 To keep style separable from assets, style elements are "cycled" over an asset struct.  For example, imagine and asset that contains lots of materials and a style defines only a few.  When the style is applied to the asset, the materials in the style are re-cycled from the beginning until they cover all materials in the asset.  The same cycling idea applies to lights and light spectra, as well as materials.
@@ -22,6 +24,8 @@ This cycling approach should support full control over style elements that are a
 
 So, an additional leveraging factor comes from crossing scenes with styles to produce 
 various combos.
+
+Wand some pictures of the same assets rendered with different styles.
 
 VirtualScenesEngine is intended to work with RenderToolbox4.  Assets and scenes are loaded loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expresset as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Assets and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
 
@@ -73,7 +77,7 @@ Ignore most current Collada asset metadata in favor of scene struct.  Also, TODO
 
 Save VirtualScene asset struct a recipe resource mat file. Support mat files for parent scenes in rtbMakeSceneFiles().
 
-## Questions
+## Questions to Self
 
 How to deal with factoids? Move to RTB4 itself. As a separate RTB4 renderer?  As an RTB4 util?
 

@@ -35,15 +35,15 @@ any plain old mexximp scene struct, by any means
 
 ## Style
 
-Style name
-renderer config mappings
-material mappings to cycle over materials
-mesh bless selector to cycle over meshes
-illuminant spectra to cycle over blessed meshes
+- Style name
+- renderer config mappings
+- material mappings to cycle over materials
+- mesh bless selector to cycle over meshes
+- illuminant spectra to cycle over blessed meshes
 
-Util to make a well-formed Style struct.
-Util to make an all-mat Style struct from diffuse reflectances.
-Util to make an all-black-or-uniform-emitter Style struct.
+- Util to make a well-formed Style struct.
+- Util to make an all-mat Style struct from diffuse reflectances.
+- Util to make an all-black-or-uniform-emitter Style struct.
 
 ## Combo
 

@@ -10,7 +10,7 @@ For now, here are some initial design notes.
 
 The goal of VirtualScenesEngine is to leverage our VirtualScenesAssets into myriad virtual scenes that we can manipulate, render, and analyze.
 
-Assimp/mexximp helps us load, manipulate, and interrogate our assets. This is mostly mesh geometry.  Assimp/mexximp also helps us combine multiple assets into one struct and add things like lights and cameras.
+Assimp/mexximp helps us load, manipulate, and interrogate our mesh geometry assets.  Assimp/mexximp also helps us combine multiple assets into one struct and add things like lights and cameras.
 
 So, one leverage factor comes from re-combining assets to produce various mexximp structs.
 

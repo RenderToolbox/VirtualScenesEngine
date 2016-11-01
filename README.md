@@ -27,7 +27,7 @@ various combos.
 
 Want some pictures of the same assets rendered with different styles.
 
-VirtualScenesEngine is intended to work with RenderToolbox4.  Assets and scenes are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expresset as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Assets and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
+VirtualScenesEngine is intended to work with RenderToolbox4.  Assets and scenes are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Assets and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
 
 ## Asset
 

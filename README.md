@@ -20,7 +20,7 @@ VSE adds the concept of a "Style" which is orthogonal to the assets. Style inclu
 
 To keep style separable from assets, style elements are "cycled" over an asset struct.  For example, imagine an asset that contains lots of materials, and a style that defines only a few.  When the style is applied to the asset, the materials in the style are re-cycled from the beginning until they cover all materials in the asset.  The same cycling idea applies to lights and light spectra, as well as materials.
 
-This cycling approach should support full control over style elements that are assigned to a scene: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on few elements, or just one.
+This cycling approach should support full control over style elements that are assigned to an asset: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on few elements, or just one.
 
 So, an additional leveraging factor comes from crossing scenes with styles to produce 
 various combos.

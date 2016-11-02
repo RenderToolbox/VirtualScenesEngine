@@ -10,26 +10,25 @@ For now, here are some initial design notes.
 
 The goal of VirtualScenesEngine is to leverage our VirtualScenesAssets into myriad virtual scenes that we can manipulate, render, and analyze.
 
-Assimp/mexximp helps us load, manipulate, and interrogate our mesh geometry assets.  Assimp/mexximp also helps us combine multiple assets into one struct and add things like lights and cameras.
+Assimp/mexximp helps us load, manipulate, and interrogate our 3D model assets.  Assimp/mexximp also helps us combine multiple models into one struct and add things like lights and cameras.
 
-So, one leverage factor comes from re-combining assets to produce various mexximp structs.
+So, one leverage factor comes from re-combining models to produce various mexximp structs.
 
-Want some pictures of re-combined assets under "boring" rendering.
+Want some pictures of re-combined models under "boring" rendering.
 
-VSE adds the concept of a "Style" which is orthogonal to the assets. Style includes materials and light spectra that can be applied to the assets, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
+VSE adds the concept of a "Style" which is orthogonal to the 3D model. Style includes materials and light spectra that can be applied to the model, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
 
-To keep style separable from assets, style elements are "cycled" over an asset struct.  For example, imagine an asset that contains lots of materials, and a style that defines only a few.  When the style is applied to the asset, the materials in the style are re-cycled from the beginning until they cover all materials in the asset.  The same cycling idea applies to lights and light spectra, as well as materials.
+To keep style separable from models, style values are "cycled" over elements of a model.  For example, imagine a model that contains lots of materials, and a style that defines only a few.  When the style is applied to the model, the materials in the style are re-cycled from the beginning until they cover all materials in the model.  The same cycling idea applies to lights and light spectra, as well as materials.
 
-This cycling approach should support full control over style elements that are assigned to an asset: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on few elements, or just one.
+This cycling approach should support full control over style values that are assigned to model elements: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on one or a few values.
 
-So, an additional leveraging factor comes from crossing scenes with styles to produce 
-various combos.
+So, an additional leveraging factor comes from crossing models with styles to produce various combos.
 
-Want some pictures of the same assets rendered with different styles.
+Want some pictures of the same model rendered with different styles.
 
-VirtualScenesEngine is intended to work with RenderToolbox4.  Assets and scenes are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Assets and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
+VirtualScenesEngine is intended to work with RenderToolbox4.  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Models and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
 
-## Asset
+## Model
 
 any plain old mexximp scene struct, by any means
 
@@ -51,7 +50,7 @@ Operations
 
 Data
  - Combo name
- - Asset struct
+ - Model struct
  - Style struct
 
 Operations
@@ -79,9 +78,9 @@ Leave remodeler functions open and optional for the user.
 
 Use MipInputParser to access prefs instead of getpref(). This way prefs can always be overridden on the call stack, without messing up global Matlab state.
 
-Ignore most current Collada asset metadata in favor of scene struct.  Also, TODO, clean up the assets!
+Ignore most current Collada model metadata in favor of scene struct.  Also, TODO, clean up those assets!
 
-Save VirtualScene asset struct a recipe resource mat file. Support mat files for parent scenes in rtbMakeSceneFiles().
+Save VirtualScene mexximp struct as recipe resource mat file. Support mat files for parent scenes in rtbMakeSceneFiles().
 
 ## Questions to Self
 

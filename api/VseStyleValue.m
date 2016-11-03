@@ -3,13 +3,15 @@ classdef VseStyleValue
     
     properties
         destination;
+        broadType;
         specificType;
         props;
     end
     
     methods
-        function obj = VseStyleValue(specificType, varargin)
+        function obj = VseStyleValue(broadType, specificType, varargin)
             parser = MipInputParser();
+            parser.addRequired('broadType', @ischar);
             parser.addRequired('specificType', @ischar);
             parser.addParameter('destination', '', @ischar);
             obj = parser.parseMagically(obj);

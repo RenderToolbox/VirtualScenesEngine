@@ -23,8 +23,12 @@ classdef VseStyle < handle
             parser.parseMagically('caller');
             
             fieldValues = obj.(fieldName);
-            wrappedIndices = 1 + mod(indices - 1, numel(fieldValues));
-            values = fieldValues(wrappedIndices);
+            if isempty(fieldValues)
+                values = [];
+            else
+                wrappedIndices = 1 + mod(indices - 1, numel(fieldValues));
+                values = fieldValues(wrappedIndices);
+            end
         end
         
         function addValue(obj, fieldName, styleValue)
@@ -51,6 +55,7 @@ classdef VseStyle < handle
         function addManyMaterials(obj, reflectances)
             parser = MipInputParser();
             parser.addRequired('reflectances', @iscell);
+            parser.addParameter('broadType', 'materials', @ischar);
             parser.addParameter('specificType', 'matte', @ischar);
             parser.addParameter('destination', 'Generic', @ischar);
             parser.addParameter('propertyName', 'diffuseReflectance', @ischar);
@@ -59,7 +64,7 @@ classdef VseStyle < handle
             
             for rr = 1:numel(reflectances)
                 obj.addValue('materials', ...
-                    VseStyleValue(specificType, 'destination', destination) ...
+                    VseStyleValue(broadType, specificType, 'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, reflectances{rr}));
             end
         end
@@ -67,6 +72,7 @@ classdef VseStyle < handle
         function addManyIlluminants(obj, illuminants)
             parser = MipInputParser();
             parser.addRequired('illuminants', @iscell);
+            parser.addParameter('broadType', 'meshes', @ischar);
             parser.addParameter('specificType', '', @ischar);
             parser.addParameter('destination', 'Generic', @ischar);
             parser.addParameter('propertyName', 'intensity', @ischar);
@@ -75,7 +81,7 @@ classdef VseStyle < handle
             
             for rr = 1:numel(illuminants)
                 obj.addValue('illuminants', ...
-                    VseStyleValue(specificType, 'destination', destination) ...
+                    VseStyleValue(broadType, specificType, 'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, illuminants{rr}));
             end
         end

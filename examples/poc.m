@@ -1,52 +1,87 @@
 %% Early proof of concept for the VirtualScenesEngine.
-%
-% TODO
-% style can shuffle values within each type
+
+% TODO:
+%   util for writing validated mappings and/or fix VseStyleValue
+%   prevent duplicate renderer configs
 
 %tbUse('VirtualScenesEngine', 'reset', 'full');
 
 
-%% Model.
+%% Choose some of our 3D model assets.
 clear;
 clc;
 
-modelFile = vsaGetFiles('Objects', 'RingToy', 'nameFilter', 'blend$');
-model = mexximpCleanImport(modelFile{1});
-model = mexximpCentralizeCamera(model, 'viewAxis', [1 1 1]);
-model = mexximpAddLanterns(model);
+ringToyFile = vsaGetFiles('Objects', 'RingToy', 'nameFilter', 'blend$');
+ringToy = mexximpCleanImport(ringToyFile{1});
+ringToy = mexximpCentralizeCamera(ringToy, 'viewAxis', [1 1 1]);
+ringToy = mexximpAddLanterns(ringToy);
+
+xylophoneFile = vsaGetFiles('Objects', 'Xylophone', 'nameFilter', 'blend$');
+xylophone = mexximpCleanImport(xylophoneFile{1});
+xylophone = mexximpCentralizeCamera(xylophone, 'viewAxis', [1 1 1]);
+xylophone = mexximpAddLanterns(xylophone);
 
 
-%% Styles.
-colorCheckerFiles = vsaGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
+%% Define some styles that are independent of the models.
 colorCheckerStyle = VseStyle('ColorChecker');
+colorCheckerFiles = vsaGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
 colorCheckerStyle.addManyMaterials(colorCheckerFiles);
 
 boringStyle = VseStyle('Boring');
-boringStyle.addValue('materials', ...
+boringStyle.addMaterial( ...
     VseStyleValue('materials', 'matte', 'destination', 'Generic') ...
     .withProperty('diffuseReflectance', 'spectrum', '300:0.5 800:0.5'));
 
+textureStyle = VseStyle('Textures');
+textureFiles = vsaGetFiles('Textures', 'OpenGameArt', 'fullPaths', false);
+textureStyle.addManyTextureMaterials(textureFiles);
+textureStyle.shuffle = true;
 
-%% Combo.
-combo = VseCombo(model);
-combo.addStyle(colorCheckerStyle);
-combo.addStyle(boringStyle);
+lightUpStyle = VseStyle('LightUp');
+lightUpStyle.addMaterial( ...
+    VseStyleValue('materials', 'matte', 'destination', 'Generic') ...
+    .withProperty('diffuseReflectance', 'spectrum', '300:0 800:0'));
+d65 = vsaGetFiles('Illuminants', 'D65', 'fullPaths', false);
+lightUpStyle.addManyIlluminants(d65);
+lightUpStyle.setMeshIlluminantSelector([true false]);
 
 
-%% VirtualScene.
-virtualScene = VseVirtualScene(combo, 'name', 'poc');
+%% Cross the models and the styles.
+ringToyCombo = VseCombo(ringToy);
+ringToyCombo.addStyle(colorCheckerStyle);
+ringToyCombo.addStyle(boringStyle);
+ringToyCombo.addStyle(textureStyle);
+ringToyCombo.addStyle(lightUpStyle);
 
-% bigModel = virtualScene.bigModel();
-% mexximpScenePreview(bigModel);
+xylophoneCombo = VseCombo(xylophone);
+xylophoneCombo.addStyle(colorCheckerStyle);
+xylophoneCombo.addStyle(boringStyle);
+xylophoneCombo.addStyle(textureStyle);
+xylophoneCombo.addStyle(lightUpStyle);
 
-%% Convert to Recipe.
-hints.fov = deg2rad(60);
+
+%% Build up virtual scenes from combos.
+ringToyScene = VseVirtualScene(ringToyCombo, 'name', 'RingToy');
+
+xylophoneScene = VseVirtualScene(xylophoneCombo, 'name', 'Xylophone');
+ringTransform = mexximpScale(0.3 * [1 1 1]) ...
+    * mexximpRotate([0.5 0.5 0], deg2rad(45)) ...
+    * mexximpTranslate([0 0 1]);
+xylophoneScene.addInnerCombo(ringToyCombo, ringTransform);
+
+%mexximpScenePreview(xylophoneScene.bigModel);
+
+%% Convert to scenes to recipes for rendering.
+hints.fov = deg2rad(20);
 hints.imageWidth = 320;
 hints.imageHeight = 240;
 hints.renderer = 'Mitsuba';
 
-recipe = vseVirtualSceneToRecipe(virtualScene, 'hints', hints);
+ringToyRecipe = vseVirtualSceneToRecipe(ringToyScene, 'hints', hints);
+xylophoneRecipe = vseVirtualSceneToRecipe(xylophoneScene, 'hints', hints);
 
 
 %% Render!
-recipe = rtbExecuteRecipe(recipe);
+ringToyRecipe = rtbExecuteRecipe(ringToyRecipe);
+xylophoneRecipe = rtbExecuteRecipe(xylophoneRecipe);
+

@@ -48,12 +48,12 @@ for ss = 1:nStyles
     % materials
     [materials, materialIndices] = virtualScene.bigMaterialValues(ss);
     bigMaterials{ss} = vseStyleValuesToMappings( ...
-        materials, materialIndices, 'update', styleName);
+        materials, materialIndices, {}, 'update', styleName);
     
     % illuminants
-    [illuminants, illuminantIndices] = virtualScene.bigIlluminantValues(ss);
+    [illuminants, meshIndices, meshNames] = virtualScene.bigIlluminantValues(ss);
     bigIlluminants{ss} = vseStyleValuesToMappings( ...
-        illuminants, illuminantIndices, 'blessAsAreaLight', styleName);
+        illuminants, meshIndices, meshNames, 'blessAsAreaLight', styleName);
 end
 
 allMappings = [bigConfigs{:} bigMaterials{:} bigIlluminants{:}];

@@ -36,6 +36,17 @@ classdef VseVirtualScene < handle
             end
         end
         
+        function model = bigModel(obj)
+            model = obj.outerCombo.model;
+            for cc = 1:numel(obj.innerCombos)
+                combo = obj.innerCombos(cc);
+                transform = obj.innerTransforms(cc);
+                model = mexximpCombineScenes(model, combo.model, ...
+                    'insertTransform', transform, ...
+                    'insertPrefix', combo.name);
+            end
+        end
+        
         function combos = allCombos(obj)
             combos = cat(2, obj.outerCombo, obj.innerCombos);
         end

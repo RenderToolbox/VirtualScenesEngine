@@ -24,18 +24,10 @@ end
 
 
 %% Combine models into one.
-bigScene = virtualScene.outerCombo.model;
-for cc = 1:numel(virtualScene.innerCombos)
-    combo = virtualScene.innerCombos(cc);
-    transform = virtualScene.innerTransforms(cc);
-    bigScene = mexximpCombineScenes(bigScene, combo.model, ...
-        'insertTransform', transform, ...
-        'insertPrefix', combo.name);
-end
-
+bigModel = virtualScene.bigModel();
 resourceFolder = rtbWorkingFolder('folderName', 'resources', 'hints', hints);
-bigSceneFile = fullfile(resourceFolder, virtualScene.name);
-mexximpSave(bigScene, bigSceneFile);
+bigSceneFile = fullfile(resourceFolder, [virtualScene.name '.mat']);
+mexximpSave(bigModel, bigSceneFile);
 
 
 %% Genereate mappings for each style.

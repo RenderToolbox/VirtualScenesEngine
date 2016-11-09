@@ -6,6 +6,7 @@ classdef VseStyle < handle
         materials;
         illuminants;
         rendererConfig;
+        shuffle = false;
     end
     
     methods
@@ -15,7 +16,7 @@ classdef VseStyle < handle
             parser.parseMagically(obj);
         end
         
-        function values = getWrappedValues(obj, fieldName, indices)
+        function values = getWrapped(obj, fieldName, indices)
             parser = MipInputParser();
             parser.addRequired('fieldName', MipInputParser.isAny('materials', 'illuminants'));
             parser.addRequired('indices', @isnumeric);
@@ -138,6 +139,48 @@ classdef VseStyle < handle
                     'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, illuminants{rr}));
             end
+        end
+    end
+    
+    methods (Static)
+        function style = wrappedStyles(styles, indices)
+            parser = MipInputParser();
+            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+            parser.addRequired('indices', @isnumeric);
+            parser.parseMagically('caller');
+            
+            if isempty(styles)
+                style = [];
+            else
+                wrappedIndices = 1 + mod(indices - 1, numel(styles));
+                style = styles(wrappedIndices);
+            end
+        end
+        
+        function name = bigName(styles, prefix)
+            parser = MipInputParser();
+            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+            parser.addRequired('prefix', '',  @ischar);
+            parser.parseMagically('caller');
+            
+            nStyles = numel(styles);
+            styleNames = cell(1, nStyles);
+            for ss = 1:nStyles
+                styleNames{ss} = styles(ss).name;
+            end
+            uniqueNames = unique(styleNames);
+            concatNames = sprintf('_%s', uniqueNames{:});
+            name = sprintf('%s%s', prefix, concatNames);
+        end
+        
+        function config = bigRendererConfig(styles)
+            parser = MipInputParser();
+            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+            parser.parseMagically('caller');
+            
+            allConfigs = [styles.rendererConfig];
+            [~, order] = unique({allConfigs.name});
+            config = allConfigs(order);
         end
     end
 end

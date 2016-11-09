@@ -37,4 +37,32 @@ classdef VseMapping
             end
         end
     end
+    
+    methods (Static)
+        function reified = reify(mappings, varargin)
+            parser = MipInputParser();
+            parser.addRequired(mappings, @(val) isa(val, 'VseMapping'));
+            parser.addParameter('name', {vseMappings.name});
+            parser.addParameter('index', {vseMappings.index});
+            parser.addParameter('group', {vseMappings.group});
+            parser.addParameter('operation', {vseMappings.operation});
+            parser.parseMagically('caller');
+            
+            if isempty(mappings)
+                reified = [];
+                return;
+            end
+            
+            rawMappings = struct( ...
+                'name', name, ...
+                'index', index, ...
+                'group', group, ...
+                'operation', operation, ...
+                'broadType', {mappings.broadType}, ...
+                'destination', {mappings.destination}, ...
+                'specificType', {mappings.specificType}, ...
+                'properties', {mappings.props});
+            reified = rtbValidateMappings(rawMappings);
+        end
+    end
 end

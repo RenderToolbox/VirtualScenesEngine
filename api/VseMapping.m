@@ -1,20 +1,22 @@
-classdef VseStyleValue
-    % Container for typed, complex values like materials and illuminants.
+classdef VseMapping
+    % Utility for building Render Toolbox mappings.
     
     properties
-        destination;
         broadType;
+        destination;
+        group;
+        index;
+        name;
+        operation;
         specificType;
         props;
     end
     
     methods
-        function obj = VseStyleValue(broadType, specificType, varargin)
+        function obj = VseMapping(varargin)
             parser = MipInputParser();
-            parser.addRequired('broadType', @ischar);
-            parser.addRequired('specificType', @ischar);
-            parser.addParameter('destination', '', @ischar);
-            obj = parser.parseMagically(obj);
+            parser.addProperties(obj);
+            parser.parseMagically(obj);
         end
         
         function obj = withProperty(obj, name, valueType, value)

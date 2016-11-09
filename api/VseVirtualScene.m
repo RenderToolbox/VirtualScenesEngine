@@ -1,40 +1,6 @@
-
 classdef VseVirtualScene < handle
-    % An outer Combo with multiple inner Combos.
-    
-    properties
-        name;
-        outerCombo;
-        innerCombos;
-        innerTransforms;
-    end
     
     methods
-        function obj = VseVirtualScene(outerCombo, varargin)
-            parser = MipInputParser();
-            parser.addRequired('outerCombo', @(val) isa(val, 'VseCombo'));
-            parser.addParameter('name', '', @ischar);
-            parser.parseMagically(obj);
-            
-            if isempty(obj.name)
-                obj.name = obj.outerCombo.name;
-            end
-        end
-        
-        function addInnerCombo(obj, innerCombo, innerTransform)
-            parser = MipInputParser();
-            parser.addRequired('innerCombo', @(val) isa(val, 'VseCombo'));
-            parser.addRequired('innerTransform', @isnumeric);
-            parser.parseMagically('caller');
-            
-            if isempty(obj.innerCombos)
-                obj.innerCombos = innerCombo;
-                obj.innerTransforms = {innerTransform};
-            else
-                obj.innerCombos(end+1) = innerCombo;
-                obj.innerTransforms{end+1} = innerTransform;
-            end
-        end
         
         function model = bigModel(obj)
             model = obj.outerCombo.model;
@@ -44,17 +10,6 @@ classdef VseVirtualScene < handle
                 model = mexximpCombineScenes(model, combo.model, ...
                     'insertTransform', transform, ...
                     'insertPrefix', combo.name);
-            end
-        end
-        
-        function combos = allCombos(obj)
-            combos = cat(2, obj.outerCombo, obj.innerCombos);
-        end
-        
-        function nStyles = styleCount(obj)
-            nStyles = numel(obj.outerCombo.styles);
-            for ss = 1:numel(obj.innerCombos)
-                nStyles = max(nStyles, numel(obj.innerCombos(ss).styles));
             end
         end
         
@@ -84,7 +39,7 @@ classdef VseVirtualScene < handle
                 bigConfig = [];
                 return;
             end
-                
+            
             bigConfig = [bigConfigCell{:}];
             if isempty(bigConfig)
                 return;

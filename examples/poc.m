@@ -1,9 +1,5 @@
 %% Early proof of concept for the VirtualScenesEngine.
 
-% TODO:
-%   util for writing validated mappings and/or fix VseStyleValue
-%   prevent duplicate renderer configs
-
 %tbUse('VirtualScenesEngine', 'reset', 'full');
 
 

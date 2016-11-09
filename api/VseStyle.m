@@ -1,25 +1,23 @@
 classdef VseStyle < handle
-    % Reusable declaration of materials, lights, etc.
+    % Reusable declaration of materials, spectra, renderer config.
     
     properties
         name;
-        shuffle = false;
         materials;
         illuminants;
-        meshIlluminantSelector;
         rendererConfig;
     end
     
     methods
-        function obj = VseStyle(name)
+        function obj = VseStyle(varargin)
             parser = MipInputParser();
-            parser.addRequired('name', @ischar);
+            parser.addProperties(obj);
             parser.parseMagically(obj);
         end
         
         function values = getWrappedValues(obj, fieldName, indices)
             parser = MipInputParser();
-            parser.addRequired('fieldName', MipInputParser.isAny('materials', 'illuminants', 'meshIlluminantSelector'));
+            parser.addRequired('fieldName', MipInputParser.isAny('materials', 'illuminants'));
             parser.addRequired('indices', @isnumeric);
             parser.parseMagically('caller');
             
@@ -35,33 +33,33 @@ classdef VseStyle < handle
             end
         end
         
-        function addMaterial(obj, styleValue)
+        function addMaterial(obj, material)
             parser = MipInputParser();
-            parser.addRequired('styleValue', @(val) isa(val, 'VseStyleValue'));
+            parser.addRequired('mapping', @(val) isa(val, 'VseMapping'));
             parser.parseMagically('caller');
             
             if isempty(obj.materials)
-                obj.materials = styleValue;
+                obj.materials = material;
             else
-                obj.materials(end+1) = styleValue;
+                obj.materials(end+1) = material;
             end
         end
         
-        function addIlluminant(obj, styleValue)
+        function addIlluminant(obj, illuminant)
             parser = MipInputParser();
-            parser.addRequired('styleValue', @(val) isa(val, 'VseStyleValue'));
+            parser.addRequired('mapping', @(val) isa(val, 'VseMapping'));
             parser.parseMagically('caller');
             
             if isempty(obj.illuminants)
-                obj.illuminants = styleValue;
+                obj.illuminants = illuminant;
             else
-                obj.illuminants(end+1) = styleValue;
+                obj.illuminants(end+1) = illuminant;
             end
         end
         
         function addRendererConfig(obj, config)
             parser = MipInputParser();
-            parser.addRequired('config', @isstruct);
+            parser.addRequired('config', @(val) isa(val, 'VseMapping'));
             parser.parseMagically('caller');
             
             if isempty(obj.rendererConfig)
@@ -69,12 +67,6 @@ classdef VseStyle < handle
             else
                 obj.rendererConfig{end+1} = config;
             end
-        end
-        
-        function setMeshIlluminantSelector(obj, meshIlluminantSelector)
-            parser = MipInputParser();
-            parser.addRequired('meshIlluminantSelector', @islogical);
-            parser.parseMagically(obj);
         end
         
         function addManyMaterials(obj, reflectances)
@@ -89,7 +81,10 @@ classdef VseStyle < handle
             
             for rr = 1:numel(reflectances)
                 obj.addMaterial( ...
-                    VseStyleValue(broadType, specificType, 'destination', destination) ...
+                    VseMapping( ...
+                    'broadType', broadType, ...
+                    'specificType', specificType, ...
+                    'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, reflectances{rr}));
             end
         end
@@ -107,20 +102,20 @@ classdef VseStyle < handle
             for tt = 1:numel(textures)
                 % create a texture
                 [~, textureName] = fileparts(textures{tt});
-                texture = struct( ...
+                texture = VseMapping( ...
                     'name', textureName, ...
                     'broadType', 'spectrumTextures', ...
                     'specificType', 'bitmap', ...
-                    'operation', 'create', ...
-                    'properties', struct( ...
-                    'name', 'filename', ...
-                    'valueType', 'string', ...
-                    'value', textures{tt}));
+                    'operation', 'create') ...
+                    .withProperty('filename', 'string', textures{tt});
                 obj.addRendererConfig(texture);
                 
                 % wire a material to the texture
                 obj.addMaterial( ...
-                    VseStyleValue(broadType, specificType, 'destination', destination) ...
+                    VseMapping( ...
+                    'broadType', broadType, ...
+                    'specificType', specificType, ...
+                    'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, textureName));
             end
         end
@@ -137,7 +132,10 @@ classdef VseStyle < handle
             
             for rr = 1:numel(illuminants)
                 obj.addIlluminant( ...
-                    VseStyleValue(broadType, specificType, 'destination', destination) ...
+                    VseMapping( ...
+                    'broadType', broadType, ...
+                    'specificType', specificType, ...
+                    'destination', destination) ...
                     .withProperty(propertyName, propertyValueType, illuminants{rr}));
             end
         end

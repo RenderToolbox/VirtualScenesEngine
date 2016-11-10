@@ -25,11 +25,12 @@ classdef VseModel < handle
                 return;
             end
             nMeshes = numel(obj.model.meshes);
-            obj.areaLightMeshSelector = false(1, nMeshes);
+            selector = false(1, nMeshes);
             for mm = 1:nMeshes
-                obj.areaLightMeshSelector = ...
-                    ~isempty(regexp(obj.meshes(mm).name, namePattern, 'once'));
+                selector(mm) = ...
+                    ~isempty(regexp(obj.model.meshes(mm).name, namePattern, 'once'));
             end
+            obj.areaLightMeshSelector = selector;
         end
         
         function selectAreaLightsAll(obj)
@@ -50,10 +51,29 @@ classdef VseModel < handle
     end
     
     methods (Static)
-        function [model, allMeshes, allMaterials, allMeshSelectors] = bigModel(outer, inner)
+        function [obj, assetInfo] = fromAsset(assetType, assetName, varargin)
+            parser = MipInputParser();
+            parser.addRequired('assetType', @ischar);
+            parser.addRequired('assetName', @ischar);
+            parser.parseMagically('caller');
+            
+            sceneFiles = vsaGetFiles(assetType, assetName, varargin{:});
+            if isempty(sceneFiles)
+                obj = [];
+                assetInfo = [];
+                return;
+            end
+            
+            model = mexximpCleanImport(sceneFiles{1}, varargin{:});
+            obj = VseModel(varargin{:}, 'name', assetName, 'model', model);
+            
+            assetInfo = vsaGetInfo(assetType, assetName, varargin{:});
+        end
+        
+        function model = bigModel(outer, inner)
             parser = MipInputParser();
             parser.addRequired('outer', @(val) isa(val, 'VseModel'));
-            parser.addRequired('inner', @(val) isa(val, 'VseModel'));
+            parser.addRequired('inner', @(val) isempty(val) || isa(val, 'VseModel'));
             parser.parseMagically('caller');
             
             % get the camera transform of the outer model
@@ -63,9 +83,9 @@ classdef VseModel < handle
                 cameraName = outer.model.cameras(1).name;
                 isCameraNode = strcmp(cameraName, {outer.model.rootNode.children.name});
                 if any(isCameraNode)
-                    cameraNodeIndex = find(isCamreraNode, 1, 'first');
+                    cameraNodeIndex = find(isCameraNode, 1, 'first');
                     cameraNode = outer.model.rootNode.children(cameraNodeIndex);
-                    cameraTransform = cameraNode.transform;
+                    cameraTransform = cameraNode.transformation;
                 else
                     cameraTransform = mexximpIdentity();
                 end
@@ -74,37 +94,33 @@ classdef VseModel < handle
             % append each inner scene struct to the outer struct
             %   keep track of which meshes and materials came from each one
             nInner = numel(inner);
-            innerMaterials = cell(1, nInner);
-            innerMeshes = cell(1, nInner);
-            innerMeshSelectors = cell(1, nInner);
             bigModelStruct = outer.model;
             for ii = 1:nInner
                 if inner(ii).transformationRelativeToCamera
-                    innerTransform = inner(ii).transform * cameraTransform;
+                    innerTransform = inner(ii).transformation * cameraTransform;
                 else
-                    innerTransform = inner(ii).transform;
+                    innerTransform = inner(ii).transformation;
                 end
                 
                 bigModelStruct = mexximpCombineScenes(bigModelStruct, ...
                     inner(ii).model, ...
                     'insertTransform', innerTransform, ...
                     'insertPrefix', inner(ii).name);
-                
-                innerMeshes{ii} = inner(ii).model.meshes;
-                innerMaterials{ii} = inner(ii).model.materials;
-                innerMeshSelectors = inner(ii).areaLightMeshSelector;
             end
-            allMeshes = cat(2, {outer.model.meshes}, innerMeshes);
-            allMaterials = cat(2, {outer.model.materials}, innerMaterials);
-            allMeshSelectors = cat(2, {outer.areaLightMeshSelector}, innerMeshSelectors);
             
             % combine names into one big name
-            uniqueNames = unique({inner.name});
-            concatNames = sprintf('+%s', uniqueNames{:});
-            bigName = sprintf('%s%s', outer.name, concatNames);
-            
             % combine mesh area light selectors into one big selector
-            bigMeshSelector = [outer.areaLightMeshSelector inner.areaLightMeshSelector];
+            if isempty(inner)
+                bigName = outer.name;
+                bigMeshSelector = outer.areaLightMeshSelector;
+            else
+                uniqueNames = unique({inner.name});
+                concatNames = sprintf('_%s', uniqueNames{:});
+                bigName = sprintf('%s%s', outer.name, concatNames);
+
+                bigMeshSelector = [outer.areaLightMeshSelector inner.areaLightMeshSelector];
+            end
+            
             
             % pack it all up
             model = VseModel( ...

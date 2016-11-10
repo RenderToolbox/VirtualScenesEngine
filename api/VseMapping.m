@@ -2,13 +2,13 @@ classdef VseMapping
     % Utility for building Render Toolbox mappings.
     
     properties
-        broadType;
-        destination;
-        group;
-        index;
-        name;
-        operation;
-        specificType;
+        broadType = '';
+        destination = '';
+        group = '';
+        index = [];
+        name = '';
+        operation = '';
+        specificType = '';
         props;
     end
     
@@ -16,7 +16,7 @@ classdef VseMapping
         function obj = VseMapping(varargin)
             parser = MipInputParser();
             parser.addProperties(obj);
-            parser.parseMagically(obj);
+            obj = parser.parseMagically(obj);
         end
         
         function obj = withProperty(obj, name, valueType, value)
@@ -41,16 +41,32 @@ classdef VseMapping
     methods (Static)
         function reified = reify(mappings, varargin)
             parser = MipInputParser();
-            parser.addRequired(mappings, @(val) isa(val, 'VseMapping'));
-            parser.addParameter('name', {vseMappings.name});
-            parser.addParameter('index', {vseMappings.index});
-            parser.addParameter('group', {vseMappings.group});
-            parser.addParameter('operation', {vseMappings.operation});
+            parser.addRequired('mappings', @(val) isempty(val) || isa(val, 'VseMapping'));
+            parser.addParameter('name', []);
+            parser.addParameter('index', []);
+            parser.addParameter('group', []);
+            parser.addParameter('operation', []);
             parser.parseMagically('caller');
             
             if isempty(mappings)
                 reified = [];
                 return;
+            end
+            
+            if isempty(name)
+                name = {mappings.name};
+            end
+            
+            if isempty(index)
+                index = {mappings.index};
+            end
+            
+            if isempty(group)
+                group = {mappings.group};
+            end
+            
+            if isempty(operation)
+                operation = {mappings.operation};
             end
             
             rawMappings = struct( ...

@@ -36,7 +36,7 @@ classdef VseStyle < handle
         
         function addMaterial(obj, material)
             parser = MipInputParser();
-            parser.addRequired('mapping', @(val) isa(val, 'VseMapping'));
+            parser.addRequired('material', @(val) isa(val, 'VseMapping'));
             parser.parseMagically('caller');
             
             if isempty(obj.materials)
@@ -48,7 +48,7 @@ classdef VseStyle < handle
         
         function addIlluminant(obj, illuminant)
             parser = MipInputParser();
-            parser.addRequired('mapping', @(val) isa(val, 'VseMapping'));
+            parser.addRequired('illuminant', @(val) isa(val, 'VseMapping'));
             parser.parseMagically('caller');
             
             if isempty(obj.illuminants)
@@ -64,13 +64,13 @@ classdef VseStyle < handle
             parser.parseMagically('caller');
             
             if isempty(obj.rendererConfig)
-                obj.rendererConfig = {config};
+                obj.rendererConfig = config;
             else
-                obj.rendererConfig{end+1} = config;
+                obj.rendererConfig(end+1) = config;
             end
         end
         
-        function addManyMaterials(obj, reflectances)
+        function addManyMaterials(obj, reflectances, varargin)
             parser = MipInputParser();
             parser.addRequired('reflectances', @iscell);
             parser.addParameter('broadType', 'materials', @ischar);
@@ -90,7 +90,7 @@ classdef VseStyle < handle
             end
         end
         
-        function addManyTextureMaterials(obj, textures)
+        function addManyTextureMaterials(obj, textures, varargin)
             parser = MipInputParser();
             parser.addRequired('textures', @iscell);
             parser.addParameter('broadType', 'materials', @ischar);
@@ -107,6 +107,7 @@ classdef VseStyle < handle
                     'name', textureName, ...
                     'broadType', 'spectrumTextures', ...
                     'specificType', 'bitmap', ...
+                    'destination', destination, ...
                     'operation', 'create') ...
                     .withProperty('filename', 'string', textures{tt});
                 obj.addRendererConfig(texture);
@@ -145,7 +146,7 @@ classdef VseStyle < handle
     methods (Static)
         function style = wrappedStyles(styles, indices)
             parser = MipInputParser();
-            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+            parser.addRequired('styles', @(val) isempty(val) || isa(val, 'VseStyle'));
             parser.addRequired('indices', @isnumeric);
             parser.parseMagically('caller');
             
@@ -157,11 +158,16 @@ classdef VseStyle < handle
             end
         end
         
-        function name = bigName(styles, prefix)
+        function name = bigName(styles, varargin)
             parser = MipInputParser();
-            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
-            parser.addRequired('prefix', '',  @ischar);
+            parser.addRequired('styles', @(val) isempty(val) || isa(val, 'VseStyle'));
+            parser.addParameter('prefix', 'style',  @ischar);
             parser.parseMagically('caller');
+            
+            if isempty(styles)
+                name = sprintf('%s_unstyled', prefix);
+                return;
+            end
             
             nStyles = numel(styles);
             styleNames = cell(1, nStyles);
@@ -175,12 +181,20 @@ classdef VseStyle < handle
         
         function config = bigRendererConfig(styles)
             parser = MipInputParser();
-            parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+            parser.addRequired('styles', @(val) isempty(val) || isa(val, 'VseStyle'));
             parser.parseMagically('caller');
             
-            allConfigs = [styles.rendererConfig];
-            [~, order] = unique({allConfigs.name});
-            config = allConfigs(order);
+            if isempty(styles)
+                config = [];
+            else
+                allConfigs = [styles.rendererConfig];
+                if isempty(allConfigs)
+                    config = [];
+                else
+                    [~, order] = unique({allConfigs.name});
+                    config = allConfigs(order);
+                end
+            end
         end
     end
 end

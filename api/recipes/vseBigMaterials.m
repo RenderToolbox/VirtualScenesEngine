@@ -1,17 +1,17 @@
-function bigMaterials = vseBigMaterials(modelMaterials, styles, varargin)
-% Apply material styles to mexximp materials, for specific 3D models.
+function bigMaterials = vseBigMaterials(models, styles, varargin)
+% Apply material styles to materials in the given models.
 %
-% The idea here is to take the materials arrays from several mexximp
-% models, and for each choose a corresponding style.  Then, for each
-% pair of (material array, style), "unroll" the style over the materials in
-% the array.  The result is a big array of mappings that crosses the given
-% materials with the given styles.  This "reifies" the styles so they can be
-% applied to specific 3D models.
+% The idea here is to "reify" the given styles so they can be applied to
+% the given 3D models.  This has two parts.  First, iterates the given
+% models and styles in parallel, to form pairs or material arrays and
+% styles.  Then, for each pair of (material array, style), "unroll" the
+% style over the materials in the array.  The result is a big array of
+% mappings that crosses the given models with the given styles.
 %
-% bigMaterials = vseBigMaterials(modelMaterials, styles) iterates the given
-% modelMaterials (cell array with each element an array of mexximp
-% materials) and styles (an array of VseStyles) to form pairs.  In each
-% pair, applies a material in the style to one of the mexximp materials and
+% bigMaterials = vseBigMaterials(models, styles, varargin) iterates the
+% given models (array of VseModel) and styles (an array of VseStyles),
+% wrapping styles as needed, to form pairs.  In each pair, applies a
+% material in the style to each of the mexximp materials in the model and
 % "reifies" the result as a RenderToolbox mapping that points to the
 % specific material by name and index.
 %
@@ -23,14 +23,14 @@ function bigMaterials = vseBigMaterials(modelMaterials, styles, varargin)
 %
 
 parser = MipInputParser();
-parser.addRequired('modelMaterials', @isCell);
-parser.addRequired('styles', @(val) isa(val, 'VseStyle'));
+parser.addRequired('models', @(val) isa(val, 'VseModel'));
+parser.addRequired('styles', @(val) isempty(val) || isa(val, 'VseStyle'));
 parser.addParameter('group', '', @ischar);
 parser.parseMagically('caller');
 
 
 %% "Unroll" styles to get one for each array of materials.
-nModels = numel(modelMaterials);
+nModels = numel(models);
 modelStyles = VseStyle.wrappedStyles(styles, 1:nModels);
 
 
@@ -38,8 +38,12 @@ modelStyles = VseStyle.wrappedStyles(styles, 1:nModels);
 workingMaterials = cell(1, nModels);
 materialIndexOffset = 0;
 for mm = 1:nModels
-    style = modelStyles(mm);
-    materials = modelMaterials{mm};
+    if isempty(modelStyles)
+        style = [];
+    else
+        style = modelStyles(mm);
+    end
+    materials = models(mm).model.materials;
     
     % get the name and index of each material
     %   index is offset for each model
@@ -52,16 +56,18 @@ for mm = 1:nModels
         % get the data of the material property with the "name" key
         q = {'key', @(s) strcmp(s, 'name')};
         p = {'properties', q, 'data'};
-        indexes{nn} = mPathGet(materials(nn), p);
+        names{nn} = mPathGet(materials(nn), p);
     end
     materialIndexOffset = materialIndexOffset + nMaterials;
     
     % make style mappings concrete using material names and indexes
-    styleMaterials = style.getWrapped('materials', 1:nMaterials);
-    workingMaterials{mm} = VseMapping.reify(styleMaterials, ...
-        'name', names, ...
-        'index', indexes, ...
-        'operation', 'update', ...
-        'group', group);
+    if ~isempty(style)
+        styleMaterials = style.getWrapped('materials', 1:nMaterials);
+        workingMaterials{mm} = VseMapping.reify(styleMaterials, ...
+            'name', names, ...
+            'index', indexes, ...
+            'operation', 'update', ...
+            'group', group);
+    end
 end
 bigMaterials = [workingMaterials{:}];

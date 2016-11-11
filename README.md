@@ -24,7 +24,7 @@ Here are some examples.  Each starts with an "outer" model, either a Mill or a L
 | {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
 | {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) 
 
-Forming combinations like this would apply in general, not just for this 2x2 example.
+Forming combinations like this should work in general, not only for this 2x2 example.
 
 # Styles
 VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseStyle.m) includes things like:

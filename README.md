@@ -41,9 +41,9 @@ Here are some examples.  These start with the same models produced above.  For e
 | | Mill  | Library |
 | ------------- | ------------- | ------------- |
 | Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
-| Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
+| Plain | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) |
 | ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
-| ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
+| ColorChecker/Texture | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
 
 
 # Render Toolbox

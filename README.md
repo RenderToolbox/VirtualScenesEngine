@@ -1,89 +1,50 @@
 # VirtualScenesEngine
-Leverage VirtualScenesAssets into myriad scenes that we can render and analyze.
+Leverage [VirtualScenesAssets](https://github.com/RenderToolbox/VirtualScenesAssets) into myriad scenes that we can render and analyze.
 
-This is a work in progress.  Description etc coming soon.
+This is a work in progress.  For now, here are some docks and images based on a [proof of concept example](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/examples/poc.m).
 
-# Design Notes
-For now, here are some initial design notes.
+# Overview
 
-## What is VirtualScenesEngine For?
+The goal of VirtualScenesEngine is to leverage our [VirtualScenesAssets](https://github.com/RenderToolbox/VirtualScenesAssets) into myriad virtual scenes that we can manipulate, render, and analyze.
 
-The goal of VirtualScenesEngine is to leverage our VirtualScenesAssets into myriad virtual scenes that we can manipulate, render, and analyze.
+# Geometry
+We can load 3D models using [mexximp](https://github.com/RenderToolbox/mexximp) this lets us load 3D models into Matlab memory, and interrogate them.  mexximp also helps us combine multiple models into one, and add things like lights and cameras.
 
-Assimp/mexximp helps us load, manipulate, and interrogate our 3D model assets.  Assimp/mexximp also helps us combine multiple models into one struct and add things like lights and cameras.
+A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseModel.m) supplements each mexximp model with additional data, like:
+ - a name
+ - a spatial transformation to apply to the model
+ - a selector for meshes that should be "blessed" or "lit up" as area lights
 
-So, one leverage factor comes from re-combining models to produce various mexximp structs.
+One way that VirtualScenesEngine leverages assets is by re-combining multiple VseModels into new scenes.
 
-Want some pictures of re-combined models under "boring" rendering.
+Here are some examples.  These start with an "outer" model, either a Mill or a Library.  For each outer model, we can insert a set of "inner" models, either the empty set {}, or a set containing three objects.  The outer models are declared separately from the sets of inner models, allowing us to re-combine them arbitrarily.
 
-VSE adds the concept of a "Style" which is orthogonal to the 3D model. Style includes materials and light spectra that can be applied to the model, as well as renderer configuration, like how to ray-sample the scene (which is often tightly coupled to the materials and lights that are used).
+| | Mill  | Library |
+| ------------- | ------------- | ------------- |
+| {}  | Content Cell  | Content Cell  |
+| {Barrel, RingToy, Xylophone}  | Content Cell  | Content Cell  |
 
-To keep style separable from models, style values are "cycled" over elements of a model.  For example, imagine a model that contains lots of materials, and a style that defines only a few.  When the style is applied to the model, the materials in the style are re-cycled from the beginning until they cover all materials in the model.  The same cycling idea applies to lights and light spectra, as well as materials.
+# Styles
+VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseStyle.m) includes things like:
+ - material definitions and reflectance spectra
+ - illuminant spectra
+ - renderer configurations, which are often tightly coupled to materials and lighting
+
+Any style can be applied to any given model by cycling the style materials and illuminants over corresponding elements in the model.  The intuition is similar to that of a [Matlab colormap](https://www.mathworks.com/help/matlab/ref/colormap.html#buq1hym), where an arbitrary set of colors can be applied to any plot.
 
 This cycling approach should support full control over style values that are assigned to model elements: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on one or a few values.
 
-So, an additional leveraging factor comes from crossing models with styles to produce various combos.
+One way that VirtualScenesEngine leverages assets is by re-combining models and styles.
 
-Want some pictures of the same model rendered with different styles.
+Here are some examples.  These start with the same models produced above.  For each model, one of two styles is applied, either a Plain style which is spectrally uniform, or a ColorChecker/Texture style which colors in the base scene using reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects using [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).
 
-VirtualScenesEngine is intended to work with RenderToolbox4.  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed as RenderToolbox4 struct arrays very similar to RenderToolbox4 mappings.  Models and styles can be combined with RenderToolbox "hints", to produce complete RenderToolbox recipes.
+| | Mill  | Library |
+| ------------- | ------------- | ------------- |
+| Plain  | Content Cell  | Content Cell  |
+| Plain  | Content Cell  | Content Cell  |
+| ColorChecker/Texture  | Content Cell  | Content Cell  |
+| ColorChecker/Texture  | Content Cell  | Content Cell  |
 
-## Model
 
-any plain old mexximp scene struct, by any means
-
-## Style
-
-Data
- - Style name
- - renderer config mappings
- - material mappings to cycle over materials
- - mesh bless selector to cycle over meshes
- - illuminant spectra to cycle over blessed meshes
-
-Operations
- - Util to make a well-formed Style struct
- - Util to make an all-matte Style struct from diffuse reflectances
- - Util to make an all-black-or-uniform-emitter Style struct
-
-## Combo
-
-Data
- - Combo name
- - Model struct
- - Style struct
-
-Operations
- - Util to make a well-formed Combo struct
-
-## VirtualScene
-
-Data
- - VirtualScene name
- - outer Combo
- - inner Combos
- - inner Combo transformations
-
-Operations
- - Util to make a well-formed VirtualScene struct.  Inner optional.
-
-## RenderToolbox4
-
-Operations
- - Util to make a Recipe from a VirtualScene plus hints.  Auto conditions and mappings files.
-Leave remodeler functions open and optional for the user.
- - Utils to get renderer config mappings for quick, full, factoid, etc.
-
-## General Keep-in-Mind
-
-Use MipInputParser to access prefs instead of getpref(). This way prefs can always be overridden on the call stack, without messing up global Matlab state.
-
-Ignore most current Collada model metadata in favor of scene struct.  Also, TODO, clean up those assets!
-
-Save VirtualScene mexximp struct as recipe resource mat file. Support mat files for parent scenes in rtbMakeSceneFiles().
-
-## Questions to Self
-
-How to deal with factoids? Move to RTB4 itself. As a separate RTB4 renderer?  As an RTB4 util?
-
-Is it OK for RTB4 mappings to invade the style part of VSE? Is it worth keeping the mappings out of VSE until actual recipe creation? I think it's not that big a deal after all. Use struct arrays that are relatively innocent, but trivial to convert to mappings.
+# Render Toolbox
+VirtualScenesEngine is intended to work with [RenderToolbox4](https://github.com/RenderToolbox/RenderToolbox4).  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed and applied programmatically to scenes using the [VseMapping](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseMapping.m) which are a utility for constructing [RenderToolbox4 Mappings](https://github.com/RenderToolbox/RenderToolbox4/wiki/Mappings-File-Format).  Models and styles can be combined with RenderToolbox "hints", to produce complete, stand-alone RenderToolbox rendering recipes.

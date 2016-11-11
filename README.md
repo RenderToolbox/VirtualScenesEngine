@@ -40,10 +40,10 @@ Here are some examples.  These start with the same models produced above.  For e
 
 | | Mill  | Library |
 | ------------- | ------------- | ------------- |
-| Plain  | Content Cell  | Content Cell  |
-| Plain  | Content Cell  | Content Cell  |
-| ColorChecker/Texture  | Content Cell  | Content Cell  |
-| ColorChecker/Texture  | Content Cell  | Content Cell  |
+| Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
+| Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
+| ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
+| ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
 
 
 # Render Toolbox

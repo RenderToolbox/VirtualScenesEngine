@@ -17,12 +17,14 @@ A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/ap
 
 One way that VirtualScenesEngine leverages assets is by re-combining multiple VseModels into new scenes.
 
-Here are some examples.  These start with an "outer" model, either a Mill or a Library.  For each outer model, we can insert a set of "inner" models, either the empty set {}, or a set containing three objects.  The outer models are declared separately from the sets of inner models, allowing us to re-combine them arbitrarily.
+Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.  Since the outer models are declared separately from the sets of inner models, we can form all the 2x2 combinations.
 
 | | Mill  | Library |
 | ------------- | ------------- | ------------- |
 | {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
-| {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) |
+| {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) 
+
+Forming combinations like this would apply in general, not just for this 2x2 example.
 
 # Styles
 VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseStyle.m) includes things like:

@@ -8,7 +8,7 @@ This is a work in progress.  For now, here are some docks and images based on a 
 The goal of VirtualScenesEngine is to leverage our [VirtualScenesAssets](https://github.com/RenderToolbox/VirtualScenesAssets) into myriad virtual scenes that we can manipulate, render, and analyze.
 
 # Geometry
-We can load 3D models using [mexximp](https://github.com/RenderToolbox/mexximp) this lets us load 3D models into Matlab memory, and interrogate them.  mexximp also helps us combine multiple models into one, and add things like lights and cameras.
+We can load 3D models using [mexximp](https://github.com/RenderToolbox/mexximp).  This helps us get the 3D models into Matlab memory where we can interrogate and manipulate them.  mexximp also helps us add things like lights and cameras if they are missing.
 
 A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseModel.m) supplements each mexximp model with additional data, like:
  - a name

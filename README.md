@@ -21,10 +21,8 @@ Here are some examples.  These start with an "outer" model, either a Mill or a L
 
 | | Mill  | Library |
 | ------------- | ------------- | ------------- |
-| {}  | [[https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/docs/Library_1_unstyled.png]]
- Contact a human
-  | Content Cell  |
-| {Barrel, RingToy, Xylophone}  | Content Cell  | Content Cell  |
+| {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
+| {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) |
 
 # Styles
 VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseStyle.m) includes things like:

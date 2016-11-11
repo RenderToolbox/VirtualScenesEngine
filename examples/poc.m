@@ -1,8 +1,10 @@
 %% Early proof of concept for the VirtualScenesEngine.
 
-% tbUse('VirtualScenesEngine', 'reset', 'full');
+% tbUse('VirtualScenesEngine');
 clear;
 clc;
+
+%% TODO: explicitly style the base scene separately from inserted objects.
 
 
 %% Choose some base scenes.
@@ -27,9 +29,8 @@ barrel.transformationRelativeToCamera = true;
 ringToy = VseModel.fromAsset('Objects', 'RingToy', 'nameFilter', 'blend$');
 ringToy.transformation = mexximpTranslate([1 -1 -3]);
 ringToy.transformationRelativeToCamera = true;
-ringToy.selectAreaLightsAll();
 
-objectSets = {[], xylophone, [xylophone barrel ringToy]};
+objectSets = {[], [xylophone barrel ringToy]};
 
 
 %% Define some styles that are independent of the models.
@@ -44,14 +45,13 @@ plainStyle.addManyIlluminants({'300:0.1 800:0.1'});
 colorCheckerStyle = VseStyle('name', 'ColorChecker');
 colorCheckerFiles = vsaGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
 colorCheckerStyle.addManyMaterials(colorCheckerFiles);
-colorCheckerStyle.addManyIlluminants({'300:0.1 800:0.1'});
+colorCheckerStyle.addManyIlluminants({'300:0.2 800:0.0', '300:0.0 800:0.2'});
 
 textureStyle = VseStyle('name', 'Texture');
 textureFiles = vsaGetFiles('Textures', 'OpenGameArt', 'fullPaths', false);
 textureStyle.addManyTextureMaterials(textureFiles);
-textureStyle.addManyIlluminants({'300:0.2 800:0.0', '300:0.0 800:0.1'});
 
-styleSets = {[], colorCheckerStyle, [plainStyle textureStyle]};
+styleSets = {[], plainStyle, [colorCheckerStyle textureStyle textureStyle textureStyle]};
 
 
 %% Make recipes that cross the base scenes, objects, and styles.
@@ -77,5 +77,34 @@ end
 for bb = 1:nBaseScenes
     for oo = 1:nObjectSets
         recipes{bb, oo} = rtbExecuteRecipe(recipes{bb, oo});
+    end
+end
+
+
+%% Show each rendering in its own, separately scaled plot.
+for bb = 1:nBaseScenes
+    for oo = 1:nObjectSets
+        radianceDataFiles = recipes{bb, oo}.rendering.radianceDataFiles;
+        nFiles = numel(radianceDataFiles);
+        for ff = 1:nFiles
+            [~, imageName] = fileparts(radianceDataFiles{ff});
+            name = sprintf('%s_%s', ...
+                recipes{bb, oo}.input.hints.recipeName, ...
+                imageName);
+            imagesFolder = rtbWorkingFolder( ...
+                'folderName', 'images', ...
+                'rendererSpecific', true, ...
+                'hints', recipes{bb, oo}.input.hints);
+            montageFile = fullfile(imagesFolder, [name '.png']);
+            
+            srgbImage = rtbMakeMontage(radianceDataFiles(ff), ...
+                'outFile', montageFile, ...
+                'toneMapFactor', 100, ...
+                'isScale', true);
+            
+            figure();
+            imshow(uint8(srgbImage));
+            title(name, 'Interpreter', 'none');
+        end
     end
 end

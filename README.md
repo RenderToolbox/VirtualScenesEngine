@@ -21,7 +21,9 @@ Here are some examples.  These start with an "outer" model, either a Mill or a L
 
 | | Mill  | Library |
 | ------------- | ------------- | ------------- |
-| {}  | Content Cell  | Content Cell  |
+| {}  | [[https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/docs/Library_1_unstyled.png]]
+ Contact a human
+  | Content Cell  |
 | {Barrel, RingToy, Xylophone}  | Content Cell  | Content Cell  |
 
 # Styles

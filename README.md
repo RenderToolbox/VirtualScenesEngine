@@ -32,7 +32,7 @@ VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D
  - illuminant spectra
  - renderer configurations, which are often tightly coupled to materials and lighting
 
-Any style can be applied to any given model by cycling the style materials and illuminants over corresponding elements in the model.  The intuition is similar to that of a [Matlab colormap](https://www.mathworks.com/help/matlab/ref/colormap.html#buq1hym), where an arbitrary set of colors can be applied to any plot.
+Any style can be applied to any given model: the style's materials and illuminants are cycled over the corresponding elements in the model.  The intuition is similar to that of a [Matlab colormap](https://www.mathworks.com/help/matlab/ref/colormap.html#buq1hym), where an arbitrary set of colors (like a style) can be applied to the lines and patches of any plot (like model).
 
 This cycling approach should support full control over style values that are assigned to model elements: as long as the numbers match, the assignments will go one-to-one.  It should also support concise and reusable style definitions based on one or a few values.
 

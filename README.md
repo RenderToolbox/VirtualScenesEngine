@@ -42,7 +42,7 @@ Another way that VirtualScenesEngine leverages assets is by re-combining models 
 
 Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene use reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects use [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).
 
-Since the four models are created separately from the two styles, we can form all the 2x4 combinations.
+Since the four models are created separately from the two styles, we can form all the 4x2 combinations.
 
 | Style | Mill | Library |
 | ------------- | ------------- | ------------- |
@@ -51,7 +51,7 @@ Since the four models are created separately from the two styles, we can form al
 | ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
 | ColorChecker/Texture | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
 
-Again, forming combinations like this should work in general, not only for this 2x4 example.
+Again, forming combinations like this should work in general, not only for this 4x2 example.
 
 # Render Toolbox
 VirtualScenesEngine is intended to work with [RenderToolbox4](https://github.com/RenderToolbox/RenderToolbox4).  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed and applied programmatically to scenes using the [VseMapping](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseMapping.m) which are a utility for constructing [RenderToolbox4 Mappings](https://github.com/RenderToolbox/RenderToolbox4/wiki/Mappings-File-Format).  Models and styles can be combined with RenderToolbox "hints", to produce complete, stand-alone RenderToolbox rendering recipes.

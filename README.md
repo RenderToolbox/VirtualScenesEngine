@@ -17,7 +17,7 @@ A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/ap
 
 One way that VirtualScenesEngine leverages assets is by re-combining multiple VseModels into new scenes.
 
-Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.  Since the outer models are declared separately from the sets of inner models, we can form all the 2x2 combinations.
+Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.  Since the two outer models are declared separately from the two sets of inner models, we can form all of the 2x2 combinations.
 
 | "Inner" Model Set | Mill | Library |
 | ------------- | ------------- | ------------- |

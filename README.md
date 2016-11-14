@@ -38,7 +38,7 @@ This cycling approach should support full control over style values that are ass
 
 Another way that VirtualScenesEngine leverages assets is by re-combining models and styles.
 
-Here are some more examples.  Each starts with a model produced above.  For each model, one of two styles is applied, either a Plain style which is spectrally uniform, or a ColorChecker/Texture style which colors in the base scene using reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects using [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).  Since the models are declared separately from the styles, we can form all the 2x4 combinations.
+Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene using reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects using [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).  Since the four models are declared separately from the two styles, we can form all the 2x4 combinations.
 
 | Style | Mill | Library |
 | ------------- | ------------- | ------------- |

@@ -17,7 +17,9 @@ A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/ap
 
 One way that VirtualScenesEngine leverages assets is by re-combining multiple VseModels into new scenes.
 
-Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.  Since the two outer models are declared separately from the two sets of inner models, we can form all of the 2x2 combinations.
+Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.
+
+Since the two outer models are declared separately from the two sets of inner models, we can form all of the 2x2 combinations.
 
 | "Inner" Model Set | Mill | Library |
 | ------------- | ------------- | ------------- |
@@ -38,7 +40,9 @@ This cycling approach should support full control over style values that are ass
 
 Another way that VirtualScenesEngine leverages assets is by re-combining models and styles.
 
-Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene use reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects use [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).  Since the four models are declared separately from the two styles, we can form all the 2x4 combinations.
+Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene use reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects use [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).
+
+Since the four models are declared separately from the two styles, we can form all the 2x4 combinations.
 
 | Style | Mill | Library |
 | ------------- | ------------- | ------------- |

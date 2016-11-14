@@ -29,12 +29,12 @@ parser.addParameter('group', '', @ischar);
 parser.parseMagically('caller');
 
 
-%% "Unroll" styles to get one for each array of meshes.
+%% "Unroll" styles to get one for each model.
 nModels = numel(models);
 modelStyles = VseStyle.wrappedStyles(styles, 1:nModels);
 
 
-%% "Unroll" each style over its corresponding array of meshes.
+%% "Unroll" each style over its corresponding model's meshes.
 workingIlluminants = cell(1, nModels);
 meshIndexOffset = 0;
 for mm = 1:nModels

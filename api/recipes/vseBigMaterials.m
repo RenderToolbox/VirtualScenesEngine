@@ -29,12 +29,12 @@ parser.addParameter('group', '', @ischar);
 parser.parseMagically('caller');
 
 
-%% "Unroll" styles to get one for each array of materials.
+%% "Unroll" styles to get one for each model.
 nModels = numel(models);
 modelStyles = VseStyle.wrappedStyles(styles, 1:nModels);
 
 
-%% "Unroll" each style over its corresponding array of materials.
+%% "Unroll" each style over its corresponding model materials.
 workingMaterials = cell(1, nModels);
 materialIndexOffset = 0;
 for mm = 1:nModels

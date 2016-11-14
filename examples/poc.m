@@ -1,10 +1,9 @@
 %% Early proof of concept for the VirtualScenesEngine.
 
 % tbUse('VirtualScenesEngine');
+
 clear;
 clc;
-
-%% TODO: explicitly style the base scene separately from inserted objects.
 
 
 %% Choose some base scenes.
@@ -51,7 +50,8 @@ textureStyle = VseStyle('name', 'Texture');
 textureFiles = vsaGetFiles('Textures', 'OpenGameArt', 'fullPaths', false);
 textureStyle.addManyTextureMaterials(textureFiles);
 
-styleSets = {[], plainStyle, [colorCheckerStyle textureStyle textureStyle textureStyle]};
+outerStyles = {[], plainStyle, colorCheckerStyle};
+innerStyleSets = {[], plainStyle, textureStyle};
 
 
 %% Make recipes that cross the base scenes, objects, and styles.
@@ -68,7 +68,10 @@ for bb = 1:nBaseScenes
     
     for oo = 1:nObjectSets
         objectSet = objectSets{oo};
-        recipes{bb, oo} = vseBuildRecipe(baseScene, objectSet, styleSets, 'hints', hints);
+        recipes{bb, oo} = vseBuildRecipe( ...
+            baseScene, outerStyles, ...
+            objectSet, innerStyleSets, ...
+            'hints', hints);
     end
 end
 

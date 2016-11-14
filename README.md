@@ -19,7 +19,7 @@ One way that VirtualScenesEngine leverages assets is by re-combining multiple Vs
 
 Here are some examples.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.  Since the outer models are declared separately from the sets of inner models, we can form all the 2x2 combinations.
 
-| "Inner" Models | Mill  | Library |
+| "Inner" Model Set | Mill | Library |
 | ------------- | ------------- | ------------- |
 | {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
 | {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) 
@@ -40,7 +40,7 @@ Another way that VirtualScenesEngine leverages assets is by re-combining models 
 
 Here are some more examples.  Each starts with a model produced above.  For each model, one of two styles is applied, either a Plain style which is spectrally uniform, or a ColorChecker/Texture style which colors in the base scene using reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects using [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).  Since the models are declared separately from the styles, we can form all the 2x4 combinations.
 
-| Style | Mill  | Library |
+| Style | Mill | Library |
 | ------------- | ------------- | ------------- |
 | Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
 | Plain | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) |

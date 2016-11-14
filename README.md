@@ -8,7 +8,7 @@ This is a work in progress.  For now, here are some docks and images based on a 
 The goal of VirtualScenesEngine is to leverage our [VirtualScenesAssets](https://github.com/RenderToolbox/VirtualScenesAssets) into myriad virtual scenes that we can manipulate, render, and analyze.
 
 # 3D Models
-One way that VirtualScenesEngine leverages assets is by re-combining multiple VseModels into new scenes.
+One way that VirtualScenesEngine leverages assets is by re-combining multiple 3D models into new scenes.
 
 We can load 3D models using [mexximp](https://github.com/RenderToolbox/mexximp).  This helps us get the 3D models into Matlab memory where we can interrogate and manipulate them.  mexximp also helps us add things like lights and cameras if they are missing.
 

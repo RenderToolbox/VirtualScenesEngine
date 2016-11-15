@@ -57,3 +57,5 @@ Again, forming combinations like this should work in general, not only for this 
 
 # Render Toolbox
 VirtualScenesEngine is intended to work with [RenderToolbox4](https://github.com/RenderToolbox/RenderToolbox4).  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Styles are expressed and applied programmatically to scenes using [VseMapping](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseMapping.m) objects, which are a utility for constructing [RenderToolbox4 Mappings](https://github.com/RenderToolbox/RenderToolbox4/wiki/Mappings-File-Format).  Models and styles can be combined with RenderToolbox "hints", to produce complete, stand-alone RenderToolbox rendering recipes.
+
+The scenes above were created with VirtualScenesEngine and saved as RenderToolbox recipes.  They were rendered with RenderToolbox4 and [Mitsuba](http://www.mitsuba-renderer.org/).

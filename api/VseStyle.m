@@ -144,6 +144,10 @@ classdef VseStyle < handle
     end
     
     methods (Static)
+        function style = unstyled()
+            style = VseStyle('name', 'unstyled');
+        end
+        
         function style = wrappedStyles(styles, indices)
             parser = MipInputParser();
             parser.addRequired('styles', @(val) isempty(val) || isa(val, 'VseStyle'));

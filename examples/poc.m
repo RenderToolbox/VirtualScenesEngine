@@ -108,6 +108,7 @@ for bb = 1:nBaseScenes
             figure();
             imshow(uint8(srgbImage));
             title(name, 'Interpreter', 'none');
+            drawnow
         end
     end
 end

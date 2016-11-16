@@ -61,23 +61,23 @@ styleSets = cell(1, nStyleSets);
 for ss = 1:nStyleSets
     % choose one outer style
     if isempty(outerStyles)
-        outerStyle = VseStyle('name', 'unstyled');
+        outerStyle = VseStyle.unstyled();
     else
         outerIndex = 1 + mod(ss-1, numel(outerStyles));
         outerStyle = outerStyles{outerIndex};
         if isempty(outerStyle)
-            outerStyle = VseStyle('name', 'unstyled');
+            outerStyle = VseStyle.unstyled();
         end
     end
     
     % unroll enough inner styles to cover the inner models
     if isempty(innerStyleSets)
-        innerStyleSet = VseStyle('name', 'unstyled');
+        innerStyleSet = VseStyle.unstyled();
     else
         innerIndex = 1 + mod(ss-1, numel(innerStyleSets));
         innerStyleSet = innerStyleSets{innerIndex};
         if isempty(innerStyleSet)
-            innerStyleSet = VseStyle('name', 'unstyled');
+            innerStyleSet = VseStyle.unstyled();
         end
         innerStyleSet = VseStyle.wrappedStyles(innerStyleSet, 1:numel(innerModels));
     end

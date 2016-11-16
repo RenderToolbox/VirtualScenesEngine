@@ -53,21 +53,47 @@ bigSceneFile = fullfile(resourceFolder, [hints.recipeName '.mat']);
 mexximpSave(bigModel.model, bigSceneFile);
 
 
+%% Align inner and outer style sets.
+%   if either is missing, use a placeholder
+%   if one is shorter than the other, recycle the short one
+nStyleSets = max(numel(outerStyles), numel(innerStyleSets));
+styleSets = cell(1, nStyleSets);
+for ss = 1:nStyleSets
+    % choose one outer style
+    if isempty(outerStyles)
+        outerStyle = VseStyle('name', 'unstyled');
+    else
+        outerIndex = 1 + mod(ss-1, numel(outerStyles));
+        outerStyle = outerStyles{outerIndex};
+        if isempty(outerStyle)
+            outerStyle = VseStyle('name', 'unstyled');
+        end
+    end
+    
+    % unroll enough inner styles to cover the inner models
+    if isempty(innerStyleSets)
+        innerStyleSet = VseStyle('name', 'unstyled');
+    else
+        innerIndex = 1 + mod(ss-1, numel(innerStyleSets));
+        innerStyleSet = innerStyleSets{innerIndex};
+        if isempty(innerStyleSet)
+            innerStyleSet = VseStyle('name', 'unstyled');
+        end
+        innerStyleSet = VseStyle.wrappedStyles(innerStyleSet, 1:numel(innerModels));
+    end
+    
+    styleSets{ss} = [outerStyle innerStyleSet];
+end
+
+
 %% Genereate mappings for each style set.
-nStyleSets = numel(innerStyleSets);
+models = [outerModel innerModels];
 bigStyleNames = cell(1, nStyleSets);
 bigConfigs = cell(1, nStyleSets);
 bigMaterials = cell(1, nStyleSets);
 bigIlluminants = cell(1, nStyleSets);
 for ss = 1:nStyleSets
-    % choose one style for the outer model
-    outerStyle = outerStyles{ss};
-    
-    % unroll enough styles for the inner models
-    innerStyles = VseStyle.wrappedStyles(innerStyleSets{ss}, 1:numel(innerModels));
-    
-    styles = [outerStyle innerStyles];
-    models = [outerModel innerModels];
+    styles = styleSets{ss};
     
     % get a name to represent this ss-th style set
     styleName = VseStyle.bigName(styles, 'prefix', sprintf('%d', ss));

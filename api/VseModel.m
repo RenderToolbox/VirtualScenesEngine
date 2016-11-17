@@ -57,7 +57,7 @@ classdef VseModel < handle
             parser.addRequired('assetName', @ischar);
             parser.parseMagically('caller');
             
-            sceneFiles = vsaGetFiles(assetType, assetName, varargin{:});
+            sceneFiles = aioGetFiles(assetType, assetName, varargin{:});
             if isempty(sceneFiles)
                 obj = [];
                 assetInfo = [];
@@ -67,7 +67,7 @@ classdef VseModel < handle
             model = mexximpCleanImport(sceneFiles{1}, varargin{:});
             obj = VseModel(varargin{:}, 'name', assetName, 'model', model);
             
-            assetInfo = vsaGetInfo(assetType, assetName, varargin{:});
+            assetInfo = aioGetInfo(assetType, assetName, varargin{:});
         end
         
         function model = bigModel(outer, inner)

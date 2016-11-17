@@ -75,7 +75,7 @@ classdef VseStyleTests < matlab.unittest.TestCase
         
         function testAlignMaterials(testCase)
             style = VseStyle('name', 'ColorChecker');
-            reflectances = vsaGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
+            reflectances = aioGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
             style.addManyMaterials(reflectances);
             testCase.assertNumElements(style.materials, 24);
             

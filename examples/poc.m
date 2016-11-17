@@ -1,31 +1,34 @@
 %% Early proof of concept for the VirtualScenesEngine.
 
-% tbUse('VirtualScenesEngine');
-
 clear;
 clc;
 
+%% Confgigure where to find assets.
+aioPrefs.locations = aioLocation( ...
+    'name', 'VirtualScenesExampleAssets', ...
+    'strategy', 'AioFileSystemStrategy', ...
+    'baseDir', fullfile(vseaRoot(), 'examples'));
 
 %% Choose some base scenes.
-mill = VseModel.fromAsset('BaseScenes', 'Mill', 'nameFilter', 'blend$');
+mill = VseModel.fromAsset('BaseScenes', 'Mill', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 mill.selectAreaLightsByName('Light');
 
-library = VseModel.fromAsset('BaseScenes', 'Library', 'nameFilter', 'blend$');
+library = VseModel.fromAsset('BaseScenes', 'Library', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 library.selectAreaLightsByName('Light');
 
 baseScenes = {mill, library};
 
 
 %% Choose some objects to insert into the base scenes.
-xylophone = VseModel.fromAsset('Objects', 'Xylophone', 'nameFilter', 'blend$');
+xylophone = VseModel.fromAsset('Objects', 'Xylophone', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 xylophone.transformation = mexximpTranslate([0 1 -3]);
 xylophone.transformationRelativeToCamera = true;
 
-barrel = VseModel.fromAsset('Objects', 'Barrel', 'nameFilter', 'blend$');
+barrel = VseModel.fromAsset('Objects', 'Barrel', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 barrel.transformation = mexximpTranslate([-1 0 -3]);
 barrel.transformationRelativeToCamera = true;
 
-ringToy = VseModel.fromAsset('Objects', 'RingToy', 'nameFilter', 'blend$');
+ringToy = VseModel.fromAsset('Objects', 'RingToy', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 ringToy.transformation = mexximpTranslate([1 -1 -3]);
 ringToy.transformationRelativeToCamera = true;
 
@@ -42,12 +45,12 @@ plainStyle.addMaterial(VseMapping( ...
 plainStyle.addManyIlluminants({'300:0.1 800:0.1'});
 
 colorCheckerStyle = VseStyle('name', 'ColorChecker');
-colorCheckerFiles = vsaGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
+colorCheckerFiles = aioGetFiles('Reflectances', 'ColorChecker', 'aioPrefs', aioPrefs, 'fullPaths', false);
 colorCheckerStyle.addManyMaterials(colorCheckerFiles);
 colorCheckerStyle.addManyIlluminants({'300:0.2 800:0.0', '300:0.0 800:0.2'});
 
 textureStyle = VseStyle('name', 'Texture');
-textureFiles = vsaGetFiles('Textures', 'OpenGameArt', 'fullPaths', false);
+textureFiles = aioGetFiles('Textures', 'OpenGameArt', 'aioPrefs', aioPrefs, 'fullPaths', false);
 textureStyle.addManyTextureMaterials(textureFiles);
 
 outerStyles = {[], plainStyle, colorCheckerStyle};
@@ -108,7 +111,7 @@ for bb = 1:nBaseScenes
             figure();
             imshow(uint8(srgbImage));
             title(name, 'Interpreter', 'none');
-            drawnow
+            drawnow();
         end
     end
 end

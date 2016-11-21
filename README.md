@@ -41,14 +41,14 @@ This cycling approach should support full control over style values that are ass
 
 Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene use reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects use [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).
 
-Since the four models are created separately from the two styles, we can form all of the 4x2 combinations.  In the table below, the columns show the two outer models and the rows show the styles and inner model sets.
+Since the four models are created separately from the two styles, we can form all of the 4x2 combinations.  In the table below, the columns show the two styles and the rows show the four combinations of models from above.
 
-| | Mill | Library |
+| | Plain | ColorChecker/Texture |
 | ------------- | ------------- | ------------- |
-| Plain, {} | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
-| Plain, {Barrel, RingToy, Xylophone} | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) |
-| ColorChecker/Texture, {} | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
-| ColorChecker/Texture, {Barrel, RingToy, Xylophone} | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
+| Mill + {} | ![empty mill](docs/Mill_2_Plain.png) | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) |
+| Mill + {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
+| Library + {} | ![empty library](docs/Library_2_Plain.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
+| Library + {Barrel, RingToy, Xylophone} | ![full library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
 
 Again, forming combinations like this should work in general, not only for this 4x2 example.
 

@@ -16,9 +16,9 @@ A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/ap
 
 Here are some examples of re-combining models.  Each starts with an "outer" model, either a Mill or a Library.  For each outer model, we insert a set of "inner" models, in this case either the empty set {} or a set of three objects.
 
-Since the two outer models are created separately from the two sets of inner models, we can form all of the 2x2 combinations.
+Since the two outer models are created separately from the two sets of inner models, we can form all of the 2x2 combinations.  In the table below, the colums show the two outer models and the rows show the two sets of inner models.
 
-| "Inner" Model Set | Mill | Library |
+| | Mill | Library |
 | ------------- | ------------- | ------------- |
 | {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
 | {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) 
@@ -41,14 +41,14 @@ This cycling approach should support full control over style values that are ass
 
 Here are some more examples.  Each starts with one of the models produced above.  For each model, one of two styles is applied: either a Plain style which is spectrally uniform, or a ColorChecker/Texture style in which colors in the base scene use reflectances from the [ColorChecker](https://en.wikipedia.org/wiki/ColorChecker) chart, and colors in the inserted objects use [various image textures](https://github.com/RenderToolbox/VirtualScenesAssets/tree/master/examples/Textures/OpenGameArt).
 
-Since the four models are created separately from the two styles, we can form all of the 4x2 combinations.
+Since the four models are created separately from the two styles, we can form all of the 4x2 combinations.  In the table below, the columns show the two outer models and the rows show the styles and inner model sets.
 
-| Style | Mill | Library |
+| | Mill | Library |
 | ------------- | ------------- | ------------- |
-| Plain | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
-| Plain | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) |
-| ColorChecker/Texture | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
-| ColorChecker/Texture | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
+| Plain, {} | ![empty mill](docs/Mill_2_Plain.png) | ![empty library](docs/Library_2_Plain.png) |
+| Plain, {Barrel, RingToy, Xylophone} | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) |
+| ColorChecker/Texture, {} | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
+| ColorChecker/Texture, {Barrel, RingToy, Xylophone} | ![empty mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) | ![empty library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
 
 Again, forming combinations like this should work in general, not only for this 4x2 example.
 

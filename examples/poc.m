@@ -9,6 +9,7 @@ aioPrefs.locations = aioLocation( ...
     'strategy', 'AioFileSystemStrategy', ...
     'baseDir', fullfile(vseaRoot(), 'examples'));
 
+
 %% Choose some base scenes.
 mill = VseModel.fromAsset('BaseScenes', 'Mill', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
 mill.selectAreaLightsByName('Light');

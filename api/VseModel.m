@@ -38,7 +38,7 @@ classdef VseModel < handle
             assetInfo = aioGetInfo(assetType, assetName, varargin{:});
         end
         
-        function model = bigModel(outer, inner)
+        function [model, outerElements, innerElements] = combine(outer, inner)
             parser = MipInputParser();
             parser.addRequired('outer', @(val) isa(val, 'VseModel'));
             parser.addRequired('inner', @(val) isempty(val) || isa(val, 'VseModel'));
@@ -60,8 +60,11 @@ classdef VseModel < handle
             end
             
             % append each inner scene struct to the outer struct
+            % track which elements came from which model
             nInner = numel(inner);
             bigModelStruct = outer.model;
+            outerElements = mexximpSceneElements(outer.model);
+            innerElements = cell(1, nInner);
             for ii = 1:nInner
                 if inner(ii).transformationRelativeToCamera
                     innerTransform = inner(ii).transformation * cameraTransform;
@@ -69,8 +72,8 @@ classdef VseModel < handle
                     innerTransform = inner(ii).transformation;
                 end
                 
-                bigModelStruct = mexximpCombineScenes(bigModelStruct, ...
-                    inner(ii).model, ...
+                [bigModelStruct, ~, innerElements{ii}] = ...
+                    mexximpCombineScenes(bigModelStruct, inner(ii).model, ...
                     'insertTransform', innerTransform, ...
                     'insertPrefix', inner(ii).name);
             end

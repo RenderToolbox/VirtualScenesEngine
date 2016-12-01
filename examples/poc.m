@@ -12,10 +12,8 @@ aioPrefs.locations = aioLocation( ...
 
 %% Choose some base scenes.
 mill = VseModel.fromAsset('BaseScenes', 'Mill', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
-mill.selectAreaLightsByName('Light');
 
 library = VseModel.fromAsset('BaseScenes', 'Library', 'aioPrefs', aioPrefs, 'nameFilter', 'blend$');
-library.selectAreaLightsByName('Light');
 
 baseScenes = {mill, library};
 
@@ -72,9 +70,8 @@ for bb = 1:nBaseScenes
     
     for oo = 1:nObjectSets
         objectSet = objectSets{oo};
-        recipes{bb, oo} = vseBuildRecipe( ...
-            baseScene, outerStyles, ...
-            objectSet, innerStyleSets, ...
+        recipes{bb, oo} = vseBuildRecipe(baseScene, objectSet, ...
+            'kiaBumper', VseMatteStyle(), ...
             'hints', hints);
     end
 end

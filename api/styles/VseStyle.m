@@ -2,15 +2,15 @@ classdef VseStyle < handle
     % Reusable interface for adding materials, lights, etc. to a model.
     
     properties
-        name;
-        destination;
+        name = '';
+        destination = '';
         
-        modelNameFilter;
         applyToOuterModels = true;
         applyToInnerModels = true;
+        modelNameFilter = '';
         
-        elementNameFilter;
-        elementTypeFilter;
+        elementTypeFilter = '';
+        elementNameFilter = '';
     end
     
     methods
@@ -18,59 +18,76 @@ classdef VseStyle < handle
         function scene = applyToWholeScene(obj, scene, hints)
         end
         
-        % Modify one mexximp or native scene element.
+        % Modify the mexximp or native scene for selected elements.
         function scene = applyToSceneElements(obj, scene, elements, hints)
         end
         
+        
         %% Filter elements for this style.
-        function elements = selectElements(obj, filterInfo)
+        function elementInfo = selectElements(obj, elementInfo)
             
             % coarse filter for inner vs outer model
-            outerSelector = obj.applyToOuterModels & ~[filterInfo.isInner];
-            innerSelector = obj.applyToInnerModels & [filterInfo.isInner];
-            selector = outerSelector | innerSelector;
-            filterInfo = filterInfo(selector);
-                        
-            % coarse filter by model names
-            if ~isempty(obj.modelNameFilter)
-                modelNames = {filterInfo.modelName};
-                isNameModelMatch = cellfun( ...
-                    @(name) ~isempty(regexp(name, obj.modelNameFilter, 'once')), ...
-                    modelNames);
-                filterInfo = filterInfo(isNameModelMatch);
+            nElements = numel(elementInfo);
+            if obj.applyToOuterModels
+                if obj.applyToInnerModels
+                    % apply to both
+                    inOutSelector = true(1, nElements);
+                else
+                    % apply only to outer
+                    inOutSelector = ~[elementInfo.isInner];
+                end
+            else
+                if obj.applyToInnerModels
+                    % apply only to inner
+                    inOutSelector = [elementInfo.isInner];
+                else
+                    % apply to neither!
+                    inOutSelector = false(1, nElements);
+                end
             end
             
-            if isempty(filterInfo)
-                elements = [];
+            elementInfo = elementInfo(inOutSelector);
+            if isempty(elementInfo)
                 return;
             end
-            elements = [filterInfo.elements];
+            
+            % coarse filter by model names
+            modelNameSelector = VseStyle.selectByFilter( ...
+                {elementInfo.modelName}, obj.modelNameFilter);
+            
+            elementInfo = elementInfo(modelNameSelector);
+            if isempty(elementInfo)
+                return;
+            end
             
             % fine filter by element types
-            if ~isempty(obj.elementTypeFilter)
-                elementTypes = {elements.type};
-                isTypeMatch = strcmp(elementTypes, obj.elementTypeFilter);
-                elements = elements(isTypeMatch);
+            elementTypeSelector = VseStyle.selectByFilter( ...
+                {elementInfo.type}, obj.elementTypeFilter);
+            
+            elementInfo = elementInfo(elementTypeSelector);
+            if isempty(elementInfo)
+                return;
             end
             
             % fine filter by element names
-            if ~isempty(obj.elementNameFilter)
-                elementNames = {elements.name};
-                isNameMatch = cellfun( ...
-                    @(name) ~isempty(regexp(name, obj.elementTypeFilter, 'once')), ...
-                    elementNames);
-                elements = elements(isNameMatch);
-            end
+            elementNameSelector = VseStyle.selectByFilter( ...
+                {elementInfo.name}, obj.elementNameFilter);
+            
+            elementInfo = elementInfo(elementNameSelector);
         end
     end
     
     methods (Static)
-        %% Organize elements to make it easy to filter them later.
-        function info = elementFilterInfo(modelNames, elements, isInner)
-            info = struct( ...
-                'modelName', modelNames, ...
-                'elements', elements, ...
-                'isInner', isInner);
+        function isMatch = selectByFilter(strings, filter)
+            if isempty(filter)
+                isMatch = true(size(strings));
+                return;
+            end
+            
+            isMatch = cellfun( ...
+                @(string) ~isempty(regexp(string, filter, 'once')), ...
+                strings, ...
+                'UniformOutput', true);
         end
     end
 end

@@ -28,6 +28,7 @@ parser = MipInputParser();
 parser.addRequired('outerModel', @(val) isa(val, 'VseModel'));
 parser.addRequired('innerModels', @(val) isempty(val) || isa(val, 'VseModel'));
 parser.addParameter('hints', rtbDefaultHints(), @isstruct);
+parser.addParameter('elementMapper', []);
 parser.parseMagically('caller');
 
 % let parser collect extra struct or named parameters as named styles
@@ -36,9 +37,25 @@ styles = parser.Unmatched;
 hints = rtbDefaultHints(hints);
 
 
-%% Combine models into one.
-[bigModel, outerElements, innerElements] = VseModel.combine(outerModel, innerModels);
+%% Choose an element mapper.
+%   This is an object that maps mexximp scene elements to corresponding
+%   native scene elements.  It must extend VseElementMapper.
 
+% use explicit mapper provided, or choose based on renderer name
+if isempty(elementMapper)
+    switch hints.renderer
+        case 'Mitsuba'
+            elementMapper = VseMitsubaElementMapper();
+        otherwise
+            error('vseBuildRecipe:missingElementMapper', ...
+                'You must supply an elementMapper for renderer <%s>.', ...
+                hints.renderer)
+    end
+end
+
+
+%% Combine models into one.
+[bigModel, elementInfo] = VseModel.combine(outerModel, innerModels);
 if isempty(hints.recipeName)
     if isempty(bigModel.name)
         hints.recipeName = 'virtualScene';
@@ -52,19 +69,11 @@ bigSceneFile = fullfile(resourceFolder, [hints.recipeName '.mat']);
 mexximpSave(bigModel.model, bigSceneFile);
 
 
-%% Organize model elements for easy filtering per style, later.
-elementFilterInfo = VseStyle.elementFilterInfo(outerModel.name, outerElements, false);
-if ~isempty(innerModels)
-    innerInfo = VseStyle.elementFilterInfo({innerModels.name}, innerElements, true);
-    elementFilterInfo = [elementFilterInfo innerInfo];
-end
-
-
 %% Generate the conditions file.
 conditionsVariables = {'imageName', 'styleName'};
 
 styleNames = fieldnames(styles);
-conditionsValues = cat(2, styleNames', styleNames');
+conditionsValues = repmat(styleNames, 1, 2);
 
 conditionsFile = fullfile(resourceFolder, [hints.recipeName '_Conditions.txt']);
 rtbWriteConditionsFile(conditionsFile, conditionsVariables, conditionsValues);
@@ -74,12 +83,10 @@ rtbWriteConditionsFile(conditionsFile, conditionsVariables, conditionsValues);
 hints.batchRenderStrategy = RtbAssimpStrategy(hints);
 
 hints.batchRenderStrategy.remodelPerConditionAfterFunction = ...
-    @(scene, mappings, names, conditionValues, cc) vseApplyMexximpStyles( ...
-    scene, mappings, names, conditionValues, cc, styles, elementFilterInfo, hints);
+    @(varargin) vseApplyMexximpStyles(varargin{:}, styles, elementInfo, hints);
 
 hints.batchRenderStrategy.converter.remodelAfterMappingsFunction = ...
-    @(scene, nativeScene, mappings, names, conditionValues, cc) vseApplyNativeStyles( ...
-    scene, nativeScene, mappings, names, conditionValues, cc, styles, elementFilterInfo, hints);
+    @(varargin) vseApplyNativeStyles(varargin{:}, styles, elementInfo, elementMapper, hints);
 
 
 %% Build the actual recipe.

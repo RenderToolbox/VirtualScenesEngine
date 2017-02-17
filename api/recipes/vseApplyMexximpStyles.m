@@ -1,4 +1,4 @@
-function [scene, mappings] = vseApplyMexximpStyles(scene, mappings, names, conditionValues, cc, styles, elementFilterInfo, hints)
+function [scene, mappings] = vseApplyMexximpStyles(scene, mappings, names, conditionValues, cc, styles, elementInfo, hints)
 %% Apply styles to the mexximp scene, for a particular condition.
 %
 % This function is where VseStyles meet Render Toolbox conditions.  Its job
@@ -16,13 +16,18 @@ conditionStyles = styles.(conditionName);
 
 
 %% Apply each style to the scene.
-isMexximpStyle = strcmp('mexximp', {conditionStyles.destination});
-for ss = find(isMexximpStyle)
-    style = conditionStyles(ss);
+for ss = 1:numel(conditionStyles)
+    style = conditionStyles{ss};
+    
+    if ~strcmp('mexximp', style.destination)
+        continue;
+    end
     
     % select elements that this style wants
-    elements = style.selectElements(elementFilterInfo);
-    scene = style.applyToSceneElements(scene, elements, hints);
+    elements = style.selectElements(elementInfo);
+    if ~isempty(elements)
+        scene = style.applyToSceneElements(scene, elements, hints);
+    end
     
     % apply to the scene overall
     scene = style.applyToWholeScene(scene, hints);

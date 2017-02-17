@@ -38,7 +38,7 @@ classdef VseModel < handle
             assetInfo = aioGetInfo(assetType, assetName, varargin{:});
         end
         
-        function [model, outerElements, innerElements] = combine(outer, inner)
+        function [model, elementInfo] = combine(outer, inner)
             parser = MipInputParser();
             parser.addRequired('outer', @(val) isa(val, 'VseModel'));
             parser.addRequired('inner', @(val) isempty(val) || isa(val, 'VseModel'));
@@ -63,8 +63,7 @@ classdef VseModel < handle
             % track which elements came from which model
             nInner = numel(inner);
             bigModelStruct = outer.model;
-            outerElements = mexximpSceneElements(outer.model);
-            innerElements = cell(1, nInner);
+            innerElementInfo = cell(1, nInner);
             for ii = 1:nInner
                 if inner(ii).transformationRelativeToCamera
                     innerTransform = inner(ii).transformation * cameraTransform;
@@ -72,10 +71,13 @@ classdef VseModel < handle
                     innerTransform = inner(ii).transformation;
                 end
                 
-                [bigModelStruct, ~, innerElements{ii}] = ...
+                [bigModelStruct, ~, innerElements] = ...
                     mexximpCombineScenes(bigModelStruct, inner(ii).model, ...
                     'insertTransform', innerTransform, ...
                     'insertPrefix', inner(ii).name);
+                
+                innerElementInfo{ii} = VseModel.elementInfo(...
+                    innerElements, inner(ii).name, true);
             end
             
             % combine names into one big name
@@ -87,10 +89,24 @@ classdef VseModel < handle
                 bigName = sprintf('%s%s', outer.name, concatNames);
             end
             
-            % pack it all up
+            % pack up the big model
             model = VseModel( ...
                 'name', bigName, ...
                 'model', bigModelStruct);
+            
+            % pack up the info about all the elements
+            outerElements = mexximpSceneElements(outer.model);
+            outerElementInfo = VseModel.elementInfo(outerElements, outer.name, false);
+            elementInfo = [outerElementInfo, innerElementInfo{:}];
+        end
+    end
+    
+    methods (Static)
+        %% Organize elements to make it easy to filter them later.
+        function info = elementInfo(elements, modelName, isInner)
+            info = elements;
+            [info.modelName] = deal(modelName);
+            [info.isInner] = deal(isInner);
         end
     end
 end

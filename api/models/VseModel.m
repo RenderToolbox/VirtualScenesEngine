@@ -4,7 +4,6 @@ classdef VseModel < handle
     properties
         name = '';
         model;
-        areaLightMeshSelector;
         transformation = mexximpIdentity();
         transformationRelativeToCamera = false;
     end
@@ -14,39 +13,6 @@ classdef VseModel < handle
             parser = MipInputParser();
             parser.addProperties(obj);
             parser.parseMagically(obj);
-            
-            if isempty(obj.areaLightMeshSelector)
-                obj.selectAreaLightsNone();
-            end
-        end
-        
-        function selectAreaLightsByName(obj, namePattern)
-            if isempty(obj.model)
-                return;
-            end
-            nMeshes = numel(obj.model.meshes);
-            selector = false(1, nMeshes);
-            for mm = 1:nMeshes
-                selector(mm) = ...
-                    ~isempty(regexp(obj.model.meshes(mm).name, namePattern, 'once'));
-            end
-            obj.areaLightMeshSelector = selector;
-        end
-        
-        function selectAreaLightsAll(obj)
-            if isempty(obj.model)
-                return;
-            end
-            nMeshes = numel(obj.model.meshes);
-            obj.areaLightMeshSelector = true(1, nMeshes);
-        end
-        
-        function selectAreaLightsNone(obj)
-            if isempty(obj.model)
-                return;
-            end
-            nMeshes = numel(obj.model.meshes);
-            obj.areaLightMeshSelector = false(1, nMeshes);
         end
     end
     
@@ -65,12 +31,14 @@ classdef VseModel < handle
             end
             
             model = mexximpCleanImport(sceneFiles{1}, varargin{:});
-            obj = VseModel(varargin{:}, 'name', assetName, 'model', model);
+            obj = VseModel(varargin{:}, ...
+                'name', assetName, ...
+                'model', model);
             
             assetInfo = aioGetInfo(assetType, assetName, varargin{:});
         end
         
-        function model = bigModel(outer, inner)
+        function [model, elementInfo] = combine(outer, inner)
             parser = MipInputParser();
             parser.addRequired('outer', @(val) isa(val, 'VseModel'));
             parser.addRequired('inner', @(val) isempty(val) || isa(val, 'VseModel'));
@@ -92,9 +60,10 @@ classdef VseModel < handle
             end
             
             % append each inner scene struct to the outer struct
-            %   keep track of which meshes and materials came from each one
+            % track which elements came from which model
             nInner = numel(inner);
             bigModelStruct = outer.model;
+            innerElementInfo = cell(1, nInner);
             for ii = 1:nInner
                 if inner(ii).transformationRelativeToCamera
                     innerTransform = inner(ii).transformation * cameraTransform;
@@ -102,31 +71,42 @@ classdef VseModel < handle
                     innerTransform = inner(ii).transformation;
                 end
                 
-                bigModelStruct = mexximpCombineScenes(bigModelStruct, ...
-                    inner(ii).model, ...
+                [bigModelStruct, ~, innerElements] = ...
+                    mexximpCombineScenes(bigModelStruct, inner(ii).model, ...
                     'insertTransform', innerTransform, ...
                     'insertPrefix', inner(ii).name);
+                
+                innerElementInfo{ii} = VseModel.elementInfo(...
+                    innerElements, inner(ii).name, true);
             end
             
             % combine names into one big name
-            % combine mesh area light selectors into one big selector
             if isempty(inner)
                 bigName = outer.name;
-                bigMeshSelector = outer.areaLightMeshSelector;
             else
                 uniqueNames = unique({inner.name});
                 concatNames = sprintf('_%s', uniqueNames{:});
                 bigName = sprintf('%s%s', outer.name, concatNames);
-
-                bigMeshSelector = [outer.areaLightMeshSelector inner.areaLightMeshSelector];
             end
             
-            
-            % pack it all up
+            % pack up the big model
             model = VseModel( ...
                 'name', bigName, ...
-                'model', bigModelStruct, ...
-                'areaLightMeshSelector', bigMeshSelector);
+                'model', bigModelStruct);
+            
+            % pack up the info about all the elements
+            outerElements = mexximpSceneElements(outer.model);
+            outerElementInfo = VseModel.elementInfo(outerElements, outer.name, false);
+            elementInfo = [outerElementInfo, innerElementInfo{:}];
+        end
+    end
+    
+    methods (Static)
+        %% Organize elements to make it easy to filter them later.
+        function info = elementInfo(elements, modelName, isInner)
+            info = elements;
+            [info.modelName] = deal(modelName);
+            [info.isInner] = deal(isInner);
         end
     end
 end

@@ -32,11 +32,18 @@ classdef VseElementMapper < handle
             end
             
             key = obj.keyForElement(mexximpElement);
-            if ~obj.elementMap.isKey(key)
-                obj.elementMap(key) = {};
+            if obj.elementMap.isKey(key)
+                % only add if new nativeElement
+                alreadyIn = obj.elementMap(key);
+                if any(nativeElement == alreadyIn)
+                    return;
+                end
+                alreadyIn{end+1} = nativeElement;
+                obj.elementMap(key) = alreadyIn;
+            else
+                % new cell for this nativeElement
+                obj.elementMap(key) = {nativeElement};
             end
-            nativeElements = cat(2, obj.elementMap(key), nativeElement);
-            obj.elementMap(key) = nativeElements;
         end
         
         function nativeElements = get(obj, mexximpElement)

@@ -3,6 +3,7 @@ classdef VseMitsubaElementMapper < VseElementMapper
     
     methods
         function buildElementMap(obj, scene, nativeScene)
+            obj.elementMap.remove(obj.elementMap.keys());
             obj.mapNested(nativeScene);
         end
         

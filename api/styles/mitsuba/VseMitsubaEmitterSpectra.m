@@ -43,9 +43,10 @@ classdef VseMitsubaEmitterSpectra < VseStyle
                 % choose a spectrum
                 spectrumIndex = 1 + mod(ee - 1, nSpectra);
                 spectrum = obj.spectra{spectrumIndex};
+                resolvedSpectrum = obj.resolveResource(spectrum, hints);
                 
                 % assign the spectrum
-                mitsubaElement.setProperty(obj.propertyName, 'spectrum', spectrum);
+                mitsubaElement.setProperty(obj.propertyName, 'spectrum', resolvedSpectrum);
             end
         end
     end

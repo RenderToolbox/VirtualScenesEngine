@@ -59,7 +59,7 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
         
         % Declare textures for the top of the scene file.
         function scene = applyToWholeScene(obj, scene, hints)
-            isTexture = strcmp([obj.reflectances.type], 'texture');
+            isTexture = strcmp({obj.reflectances.type}, 'texture');
             for tt = find(isTexture)
                 texture = obj.textureTemplate.copy();
                 
@@ -67,7 +67,8 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
                 textureId = VseMitsubaDiffuseMaterials.idForTexture(reflectance.value);
                 texture.id = textureId;
                 
-                texture.setProperty('filename', 'string', reflectance.value);
+                resolvedTexture = obj.resolveResource(reflectance.value, hints);
+                texture.setProperty('filename', 'string', resolvedTexture);
                 
                 scene.prepend(texture);
             end
@@ -93,7 +94,8 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
                 mitsubaElement.pluginType = 'diffuse';
                 switch reflectance.type
                     case 'spectrum'
-                        mitsubaElement.setProperty('reflectance', 'spectrum', reflectance.value);
+                        resolvedSpectrum = obj.resolveResource(reflectance.value, hints);
+                        mitsubaElement.setProperty('reflectance', 'spectrum', resolvedSpectrum);
                     case 'texture'
                         textureId = VseMitsubaDiffuseMaterials.idForTexture(reflectance.value);
                         mitsubaElement.append(MMitsubaProperty.withData('', 'ref', ...
@@ -107,7 +109,7 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
     methods (Static)
         function id = idForTexture(fileName)
             [~, fileBase, fileExt] = fileparts(fileName);
-            id = [fileBase '_' fileExt];
+            id = [fileBase '_' fileExt(2:end)];
         end
     end
 end

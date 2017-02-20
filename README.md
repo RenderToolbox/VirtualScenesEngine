@@ -20,10 +20,10 @@ Since the two outer models are created separately from the two sets of inner mod
 
 | | Mill | Library |
 | ------------- | ------------- | ------------- |
-| {} | ![empty mill](docs/Mill_1_unstyled.png) | ![empty library](docs/Library_1_unstyled.png) |
-| {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_1_unstyled.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_1_unstyled.png) 
+| {} | ![empty mill](docs/Mill_none.png) | ![empty library](docs/Library_none.png) |
+| {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_none.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_none.png) 
 
-Note that the inner objects occupy the same positions in the image, in both the Mill and the Library.  This is because the inner objects were inserted relative to the camera in each scene.  This is a [convenience option](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/examples/poc.m#L23) and not required.
+Note that the inner objects occupy the same positions in the image, in both the Mill and the Library.  This is because the inner objects were inserted relative to the camera in each scene.  This is a [convenience option](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/examples/vseProofOfConcept.m#L23) and not required.
 
 Forming combinations like this should work in general, not only for this 2x2 example.
 
@@ -45,10 +45,10 @@ Since the four models are created separately from the two styles, we can form al
 
 | | Plain | ColorChecker/Texture |
 | ------------- | ------------- | ------------- |
-| Mill + {} | ![empty mill](docs/Mill_2_Plain.png) | ![empty mill](docs/Mill_3_ColorChecker_Texture.png) |
-| Mill + {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_2_Plain.png) | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
-| Library + {} | ![empty library](docs/Library_2_Plain.png) | ![empty library](docs/Library_3_ColorChecker_Texture.png) |
-| Library + {Barrel, RingToy, Xylophone} | ![full library](docs/Library_Barrel_RingToy_Xylophone_2_Plain.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_3_ColorChecker_Texture.png) |
+| Mill + {} | ![empty mill](docs/Mill_plain.png) | ![empty mill](docs/Mill_colorsAndTextures.png) |
+| Mill + {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_plain.png) | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_colorsAndTextures.png) |
+| Library + {} | ![empty library](docs/Library_plain.png) | ![empty library](docs/Library_colorsAndTextures.png) |
+| Library + {Barrel, RingToy, Xylophone} | ![full library](docs/Library_Barrel_RingToy_Xylophone_plain.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_colorsAndTextures.png) |
 
 Again, forming combinations like this should work in general, not only for this 4x2 example.
 

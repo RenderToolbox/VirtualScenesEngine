@@ -9,7 +9,7 @@ One way that VirtualScenesEngine leverages assets is by re-combining multiple 3D
 
 We can load 3D models using [mexximp](https://github.com/RenderToolbox/mexximp).  This helps us get the 3D models into Matlab memory where we can interrogate and manipulate them.  mexximp also helps us add things like lights and cameras if they are missing.
 
-A [VseModel](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseModel.m) supplements each mexximp model with additional data, like:
+A [VseModel](api/VseModel.m) supplements each mexximp model with additional data, like:
  - a name
  - a spatial transformation to apply to the model
 
@@ -22,14 +22,14 @@ Since the two outer models are created separately from the two sets of inner mod
 | {} | ![empty mill](docs/Mill_none.png) | ![empty library](docs/Library_none.png) |
 | {Barrel, RingToy, Xylophone} | ![full mill](docs/Mill_Barrel_RingToy_Xylophone_none.png) | ![full library](docs/Library_Barrel_RingToy_Xylophone_none.png) 
 
-Note that the inner objects occupy the same positions in the image, in both the Mill and the Library.  This is because the inner objects were inserted relative to the camera in each scene.  This is a [convenience option](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/examples/vseProofOfConcept.m#L30) and not required.
+Note that the inner objects occupy the same positions in the image, in both the Mill and the Library.  This is because the inner objects were inserted relative to the camera in each scene.  This is a [convenience option](examples/vseProofOfConept.m#L30) and not required.
 
 Forming combinations like this should work in general, not only for this 2x2 example.
 
 # Styles
 Another way that VirtualScenesEngine leverages assets is by re-combining models with "Styles".
 
-VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/api/VseStyle.m) includes things like:
+VirtualScenesEngine adds the concept of a "Style" which is independent of any 3D model.  Each [VseStyle](api/VseStyle.m) includes things like:
  - criteria for selecting models by name, and whether they were used as outer or inner, as above
  - criteria for selecting model elements by name and type
  - custom methods for manipulating model elements 
@@ -52,5 +52,5 @@ Again, forming combinations like this should work in general, not only for this 
 # Render Toolbox
 VirtualScenesEngine is intended to work with [RenderToolbox4](https://github.com/RenderToolbox/RenderToolbox4).  3D models are loaded using Assimp and mexximp, which RenderToolbox4 supports.  Models and styles can be combined with RenderToolbox "hints", to produce complete, stand-alone RenderToolbox rendering recipes.
 
-The scenes above were created with VirtualScenesEngine and saved as RenderToolbox recipes.  They were rendered with RenderToolbox4 and [Mitsuba](http://www.mitsuba-renderer.org/).  The code is included in this repository as the [proof of concept example](https://github.com/RenderToolbox/VirtualScenesEngine/blob/master/examples/vseProovOfConcept.m).
+The scenes above were created with VirtualScenesEngine and saved as RenderToolbox recipes.  They were rendered with RenderToolbox4 and [Mitsuba](http://www.mitsuba-renderer.org/).  The code is included in this repository as the [proof of concept example](examples/vseProofOfConept.m).
 

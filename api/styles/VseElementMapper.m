@@ -26,6 +26,10 @@ classdef VseElementMapper < handle
             key = rawKey(~isspace(rawKey));
         end
         
+        function clear(obj)
+            obj.elementMap.remove(obj.elementMap.keys());
+        end
+        
         function put(obj, mexximpElement, nativeElement)
             if isempty(nativeElement)
                 return;

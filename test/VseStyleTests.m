@@ -2,120 +2,170 @@ classdef VseStyleTests < matlab.unittest.TestCase
     % Test basic behaviors for Style objects.
     
     properties
-        checkerboardFile = fullfile(fileparts(mfilename('fullpath')), 'fixture', 'CheckerBoard.blend');
-        ballSceneFile = fullfile(fileparts(mfilename('fullpath')), 'fixture', 'BigBall.blend');
+        outputFolder = fullfile(tempdir(), 'VseStyleTests');
+    end
+    
+    methods (TestMethodSetup)
+        function cleanUpTempFiles(testCase)
+            if 7 == exist(testCase.outputFolder, 'dir')
+                rmdir(testCase.outputFolder, 's');
+            end
+            mkdir(testCase.outputFolder);
+        end
+    end
+    
+    methods
+        function info = makeElementInfo(testCase)
+            elements = struct( ...
+                'name', {'name-a', 'name-b', 'name-c'}, ...
+                'type', {'type-1', 'type-2', 'type-3'}, ...
+                'path', []);
+            
+            inner = VseModel.elementInfo(elements, 'inner', true);
+            outer = VseModel.elementInfo(elements, 'outer', false);
+            
+            info = [inner outer];
+        end
     end
     
     methods (Test)
         
-        function testCombineRendererConfigs(testCase)
-            % two styles, with overlapping integrator config
-            styleOne = VseStyle('name', 'one');
-            styleOne.addRendererConfig(VseMapping( ...
-                'name', 'integrator', ...
-                'broadType', 'integrator', ...
-                'specificType', 'path'));
-            styleOne.addRendererConfig(VseMapping( ...
-                'name', 'sampler', ...
-                'broadType', 'sampler', ...
-                'specificType', 'lowdiscrepancy'));
-            styleTwo = VseStyle('name', 'two');
-            styleTwo.addRendererConfig(VseMapping( ...
-                'name', 'integrator', ...
-                'broadType', 'integrator', ...
-                'specificType', 'path'));
-            styleTwo.addRendererConfig(VseMapping( ...
-                'name', 'film', ...
-                'broadType', 'film', ...
-                'specificType', 'hdrfilm'));
+        function testSelectAll(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = true;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = '';
             
-            % remove overlap when combining configs
-            bigConfig = VseStyle.bigRendererConfig([styleOne styleTwo]);
-            names = {bigConfig.name};
-            testCase.assertNumElements(names, 3);
-            testCase.assertEqual(sort(names), {'film', 'integrator', 'sampler'});
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 6);
         end
         
-        function testRecycleStyles(testCase)
-            style = VseStyle('name', 'a');
-            indices = 1:10;
-            recycled = VseStyle.wrappedStyles(style, indices);
-            testCase.assertNumElements(recycled, numel(indices));
+        function testSelectNone(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = false;
+            style.applyToInnerModels = false;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = '';
             
-            names = {recycled.name};
-            testCase.assertEqual(unique(names), {'a'});
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertEmpty(selectedElements);
         end
         
-        function testAlignStyles(testCase)
-            styleA = VseStyle('name', 'a');
-            styleB = VseStyle('name', 'b');
-            styleC = VseStyle('name', 'c');
-            styleD = VseStyle('name', 'd');
-            styles = [styleA styleB styleC styleD];
+        
+        function testSelectUnique(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = false;
+            style.modelNameFilter = 'outer';
+            style.elementTypeFilter = '2';
+            style.elementNameFilter = 'b';
             
-            indices = 1:numel(styles);
-            aligned = VseStyle.wrappedStyles(styles, indices);
-            testCase.assertNumElements(aligned, numel(indices));
-            
-            names = {aligned.name};
-            testCase.assertEqual(names, {'a', 'b', 'c', 'd'});
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 1);
+            testCase.assertFalse(selectedElements.isInner);
+            testCase.assertEqual(selectedElements.modelName, 'outer');
+            testCase.assertEqual(selectedElements.type, 'type-2');
+            testCase.assertEqual(selectedElements.name, 'name-b');
         end
         
-        function testRecycleMaterials(testCase)
-            style = VseStyle('name', 'a');
-            style.addMaterial(VseMapping('name', 'a'));
+        function testSelectInnerElements(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = false;
+            style.applyToInnerModels = true;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = '';
             
-            indices = 1:10;
-            recycled = style.getWrapped('materials', indices);
-            testCase.assertNumElements(recycled, numel(indices));
-            
-            names = {recycled.name};
-            testCase.assertEqual(unique(names), {'a'});
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 3);
+            isInner = [selectedElements.isInner];
+            testCase.assertTrue(all(isInner));
         end
         
-        function testAlignMaterials(testCase)
-            style = VseStyle('name', 'ColorChecker');
-            reflectances = aioGetFiles('Reflectances', 'ColorChecker', 'fullPaths', false);
-            style.addManyMaterials(reflectances);
-            testCase.assertNumElements(style.materials, 24);
+        function testSelectOuterElements(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = false;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = '';
             
-            indices = 1:numel(style.materials);
-            aligned = style.getWrapped('materials', indices);
-            testCase.assertNumElements(aligned, numel(indices));
-            
-            % material properties should match given reflectances
-            props = [aligned.props];
-            propValues = {props.value};
-            testCase.assertEqual(propValues, reflectances);
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 3);
+            isOuter = ~[selectedElements.isInner];
+            testCase.assertTrue(all(isOuter));
         end
         
-        function testRecycleIlluminants(testCase)
-            style = VseStyle('name', 'a');
-            style.addIlluminant(VseMapping('name', 'a'));
+        function testSelectModelName(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = true;
+            style.modelNameFilter = 'outer';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = '';
             
-            indices = 1:10;
-            recycled = style.getWrapped('illuminants', indices);
-            testCase.assertNumElements(recycled, numel(indices));
-            
-            names = {recycled.name};
-            testCase.assertEqual(unique(names), {'a'});
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 3);
+            modelNames = {selectedElements.modelName};
+            testCase.assertTrue(all(strcmp(modelNames, 'outer')));
         end
         
-        function testAlignIlluminants(testCase)
-            style = VseStyle('name', 'Constants');
-            intensities = num2cell(1:33);
-            style.addManyIlluminants(intensities);
-            testCase.assertNumElements(style.illuminants, 33);
+        function testSelectElementType(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = true;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '3';
+            style.elementNameFilter = '';
             
-            indices = 1:numel(style.illuminants);
-            aligned = style.getWrapped('illuminants', indices);
-            testCase.assertNumElements(aligned, numel(indices));
-            
-            % illuminant properties should match given intensities
-            props = [aligned.props];
-            propValues = {props.value};
-            testCase.assertEqual(propValues, intensities);
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 2);
+            elementTypes = {selectedElements.type};
+            testCase.assertTrue(all(strcmp(elementTypes, 'type-3')));
         end
         
+        function testSelectElementName(testCase)
+            style = VseStyle();
+            style.applyToOuterModels = true;
+            style.applyToInnerModels = true;
+            style.modelNameFilter = '';
+            style.elementTypeFilter = '';
+            style.elementNameFilter = 'name-a';
+            
+            info = testCase.makeElementInfo();
+            selectedElements = style.selectElements(info);
+            testCase.assertNumElements(selectedElements, 2);
+            elementNames = {selectedElements.name};
+            testCase.assertTrue(all(strcmp(elementNames, 'name-a')));
+        end
+        
+        function testResolveResource(testCase)
+            % look for a resource in the test fixture folder
+            fixtureName = 'BigBall.blend';
+            fixtureFolder = fullfile(fileparts(mfilename('fullpath')), 'fixture');
+            hints.workingFolder = fixtureFolder;
+            
+            style = VseStyle();
+            resolvedName = style.resolveResource(fixtureName, hints, ...
+                'outputFolder', testCase.outputFolder, ...
+                'outputPrefix', 'testPrefix');
+            testCase.assertNotEmpty(resolvedName);
+            
+            expectedRelativePath = fullfile('testPrefix', 'BigBall.blend');
+            testCase.assertEqual(resolvedName, expectedRelativePath);
+            
+            expectedFullPath = fullfile(testCase.outputFolder, expectedRelativePath);
+            testCase.assertEqual(exist(expectedFullPath, 'file'), 2);
+        end
     end
 end

@@ -39,8 +39,10 @@ classdef VseElementMapper < handle
             if obj.elementMap.isKey(key)
                 % only add if new nativeElement
                 alreadyIn = obj.elementMap(key);
-                if any(nativeElement == alreadyIn)
-                    return;
+                for aa = 1:numel(alreadyIn)
+                    if eq(nativeElement, alreadyIn{aa})
+                        return;
+                    end
                 end
                 alreadyIn{end+1} = nativeElement;
                 obj.elementMap(key) = alreadyIn;

@@ -7,30 +7,6 @@ classdef VseModelTests < matlab.unittest.TestCase
     end
     
     methods (Test)
-        function testSelectMeshes(testCase)
-            checkerboard = VseModel( ...
-                'name', 'checkerboard', ...
-                'model', mexximpCleanImport(testCase.checkerboardFile));
-            
-            checkerboard.selectAreaLightsNone();
-            testCase.assertEqual(numel(checkerboard.areaLightMeshSelector), numel(checkerboard.model.meshes));
-            testCase.assertTrue(~all(checkerboard.areaLightMeshSelector));
-            
-            checkerboard.selectAreaLightsAll();
-            testCase.assertEqual(numel(checkerboard.areaLightMeshSelector), numel(checkerboard.model.meshes));
-            testCase.assertTrue(all(checkerboard.areaLightMeshSelector));
-            
-            checkerboard.selectAreaLightsByName('Light');
-            expectedSelector = false(1, numel(checkerboard.model.meshes));
-            expectedSelector(1:3) = true;
-            testCase.assertEqual(checkerboard.areaLightMeshSelector, expectedSelector);
-            
-            checkerboard.selectAreaLightsByName('Check');
-            expectedSelector = false(1, numel(checkerboard.model.meshes));
-            expectedSelector(4:end) = true;
-            testCase.assertEqual(checkerboard.areaLightMeshSelector, expectedSelector);
-        end
-        
         function testInsertFromOrigin(testCase)
             checkerboard = VseModel( ...
                 'name', 'checkerboard', ...
@@ -40,7 +16,7 @@ classdef VseModelTests < matlab.unittest.TestCase
                 'model', mexximpCleanImport(testCase.ballSceneFile), ...
                 'transformation', mexximpIdentity(), ...
                 'transformationRelativeToCamera', false);
-            bigScene = VseModel.bigModel(checkerboard, ball);
+            bigScene = VseModel.combine(checkerboard, ball);
             
             % ball position should be at origin
             ballNode = bigScene.model.rootNode.children(end);
@@ -58,7 +34,7 @@ classdef VseModelTests < matlab.unittest.TestCase
                 'model', mexximpCleanImport(testCase.ballSceneFile), ...
                 'transformation', mexximpIdentity(), ...
                 'transformationRelativeToCamera', true);
-            bigScene = VseModel.bigModel(checkerboard, ball);
+            bigScene = VseModel.combine(checkerboard, ball);
             
             % ball position should be near camera position
             ballNode = bigScene.model.rootNode.children(end);
@@ -68,6 +44,40 @@ classdef VseModelTests < matlab.unittest.TestCase
             testCase.assertEqual(ballNode.transformation([4 8 12]), ...
                 cameraNode.transformation([4 8 12]), ...
                 'AbsTol', 1e-6);
+        end
+        
+        function testCombinedElementInfo(testCase)
+            [checkerboardModel, checkerboardElements] = mexximpCleanImport(testCase.checkerboardFile);
+            checkerboard = VseModel( ...
+                'name', 'checkerboard', ...
+                'model', checkerboardModel);
+            
+            [ballModel, ballElements] = mexximpCleanImport(testCase.checkerboardFile);
+            ball = VseModel( ...
+                'name', 'ball', ...
+                'model', ballModel, ...
+                'transformation', mexximpIdentity(), ...
+                'transformationRelativeToCamera', true);
+            [~, combinedElements] = VseModel.combine(checkerboard, ball);
+            
+            % expect sum of elements, minus one extra root node
+            nCheckerboard = numel(checkerboardElements);
+            nBall = numel(ballElements);
+            nExpected = nCheckerboard + nBall - 1;
+            nCombined = numel(combinedElements);
+            testCase.assertEqual(nCombined, nExpected);
+            
+            % all inner elements are from the ball
+            isInner = [combinedElements.isInner];
+            innerElements = combinedElements(isInner);
+            innerModelNames = {innerElements.modelName};
+            testCase.assertTrue(all(strcmp(innerModelNames, ball.name)));
+            
+            % all outer elements are from the checkerboard
+            outerElements = combinedElements(~isInner);
+            outerModelNames = {outerElements.modelName};
+            testCase.assertTrue(all(strcmp(outerModelNames, checkerboard.name)));
+            
         end
         
         function testModelFromAsset(testCase)

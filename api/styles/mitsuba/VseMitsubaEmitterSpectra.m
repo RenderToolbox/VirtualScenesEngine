@@ -5,11 +5,12 @@ classdef VseMitsubaEmitterSpectra < VseStyle
         spectra;
         pluginType = 'area';
         propertyName = 'radiance'
+        emitterType = 'emitter';
     end
     
     methods
         function obj = VseMitsubaEmitterSpectra(varargin)
-            obj.elementTypeFilter = 'meshes';
+            obj.elementTypeFilter = 'nodes';
             obj.destination = 'Mitsuba';
             
             parser = MipInputParser();
@@ -33,10 +34,11 @@ classdef VseMitsubaEmitterSpectra < VseStyle
             
             nElements = numel(elements);
             for ee = 1:nElements
-                mitsubaElement = elements(ee);
+                mitsubaElement = elements{ee};
                 
                 % restrict to emitters of a particular plugin type
-                if ~strcmp(mitsubaElement.pluginType, obj.pluginType)
+                emitter = mitsubaElement.find(mitsubaElement.id, 'type', obj.emitterType);
+                if isempty(emitter) || ~strcmp(emitter.pluginType, obj.pluginType)
                     continue;
                 end
                 
@@ -46,7 +48,7 @@ classdef VseMitsubaEmitterSpectra < VseStyle
                 resolvedSpectrum = obj.resolveResource(spectrum, hints);
                 
                 % assign the spectrum
-                mitsubaElement.setProperty(obj.propertyName, 'spectrum', resolvedSpectrum);
+                emitter.setProperty(obj.propertyName, 'spectrum', resolvedSpectrum);
             end
         end
     end

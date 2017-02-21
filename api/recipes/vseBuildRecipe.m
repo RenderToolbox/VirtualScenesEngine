@@ -46,6 +46,8 @@ if isempty(elementMapper)
     switch hints.renderer
         case 'Mitsuba'
             elementMapper = VseMitsubaElementMapper();
+        case 'PBRT'
+            elementMapper = VsePbrtElementMapper();
         otherwise
             error('vseBuildRecipe:missingElementMapper', ...
                 'You must supply an elementMapper for renderer <%s>.', ...

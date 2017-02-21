@@ -1,16 +1,16 @@
-classdef VseMitsubaEmitterSpectra < VseStyle
+classdef VsePbrtEmitterSpectra < VseStyle
     % Apply light spectra based on a list of spectrum values.
     
     properties
         spectra;
-        pluginType = 'area';
-        propertyName = 'radiance'
+        identifier = 'AreaLightSource';
+        propertyName = 'L'
     end
     
     methods
-        function obj = VseMitsubaEmitterSpectra(varargin)
-            obj.elementTypeFilter = 'meshes';
-            obj.destination = 'Mitsuba';
+        function obj = VsePbrtEmitterSpectra(varargin)
+            obj.elementTypeFilter = 'nodes';
+            obj.destination = 'PBRT';
             
             parser = MipInputParser();
             parser.addProperties(obj);
@@ -33,10 +33,11 @@ classdef VseMitsubaEmitterSpectra < VseStyle
             
             nElements = numel(elements);
             for ee = 1:nElements
-                mitsubaElement = elements(ee);
+                pbrtElement = elements{ee};
                 
-                % restrict to emitters of a particular plugin type
-                if ~strcmp(mitsubaElement.pluginType, obj.pluginType)
+                % restrict to a particular pbrt identifier
+                emitter = pbrtElement.find(obj.identifier);
+                if isempty(emitter)
                     continue;
                 end
                 
@@ -46,7 +47,7 @@ classdef VseMitsubaEmitterSpectra < VseStyle
                 resolvedSpectrum = obj.resolveResource(spectrum, hints);
                 
                 % assign the spectrum
-                mitsubaElement.setProperty(obj.propertyName, 'spectrum', resolvedSpectrum);
+                emitter.setParameter(obj.propertyName, 'spectrum', resolvedSpectrum);
             end
         end
     end

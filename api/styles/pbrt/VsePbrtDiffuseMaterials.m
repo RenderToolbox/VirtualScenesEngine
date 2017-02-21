@@ -1,25 +1,29 @@
-classdef VseMitsubaDiffuseMaterials < VseStyle
+classdef VsePbrtDiffuseMaterials < VseStyle
     % Apply matte materials based on a list of spectra or textures.
     
     properties
+        pixelType = 'spectrum';
         reflectances;
         textureTemplate;
     end
     
     methods
-        function obj = VseMitsubaDiffuseMaterials(varargin)
+        function obj = VsePbrtDiffuseMaterials(varargin)
             obj.elementTypeFilter = 'materials';
-            obj.destination = 'Mitsuba';
+            obj.destination = 'PBRT';
             
-            texture = MMitsubaElement('template', 'texture', 'bitmap');
-            texture.setProperty('gamma', 'float', 1);
-            texture.setProperty('maxAnisotropy', 'float', 20);
-            texture.setProperty('uoffset', 'float', 0);
-            texture.setProperty('voffset', 'float', 0);
-            texture.setProperty('uscale', 'float', 1);
-            texture.setProperty('vscale', 'float', 1);
-            texture.setProperty('wrapMode', 'string', 'repeat');
-            texture.setProperty('filterType', 'string', 'ewa');
+            texture = MPbrtElement('Texture');
+            texture.value = {'template', obj.pixelType};
+            texture.type = 'imagemap';
+            texture.setParameter('filename', 'string', '');
+            texture.setParameter('gamma', 'float', 1);
+            texture.setParameter('maxanisotropy', 'float', 20);
+            texture.setParameter('udelta', 'float', 0);
+            texture.setParameter('vdelta', 'float', 0);
+            texture.setParameter('uscale', 'float', 1);
+            texture.setParameter('vscale', 'float', 1);
+            texture.setParameter('wrap', 'string', 'repeat');
+            texture.setParameter('trilinear', 'bool', false);
             obj.textureTemplate = texture;
             
             parser = MipInputParser();
@@ -57,20 +61,27 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
             end
         end
         
+        function texture = newTexture(obj, name)
+            texture = MPbrtElement(obj.textureTemplate.identifier, ...
+                'type', obj.textureTemplate.type);
+            texture.value = {name, obj.pixelType};
+            texture.name = name;
+            texture.parameters = obj.textureTemplate.parameters;
+        end
+        
         % Declare textures for the top of the scene file.
         function scene = applyToWholeScene(obj, scene, hints)
             isTexture = strcmp({obj.reflectances.type}, 'texture');
             for tt = find(isTexture)
-                texture = obj.textureTemplate.copy();
-                
                 reflectance = obj.reflectances(tt);
-                textureId = VseMitsubaDiffuseMaterials.idForTexture(reflectance.value);
-                texture.id = textureId;
+                textureId = VsePbrtDiffuseMaterials.idForTexture(reflectance.value);
+                texture = obj.newTexture(textureId);
                 
-                resolvedTexture = obj.resolveResource(reflectance.value, hints);
-                texture.setProperty('filename', 'string', resolvedTexture);
+                [~, resolvedFullPath] = obj.resolveResource(reflectance.value, hints);
+                recodedTexture = obj.recodeImage(resolvedFullPath, hints);
+                texture.setParameter('filename', 'string', recodedTexture);
                 
-                scene.prepend(texture);
+                scene.world.prepend(texture);
             end
         end
         
@@ -84,23 +95,22 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
             
             nElements = numel(elements);
             for ee = 1:nElements
-                mitsubaElement = elements{ee};
+                pbrtElement = elements{ee};
                 
                 % choose a spectrum
                 reflectanceIndex = 1 + mod(ee - 1, nReflectances);
                 reflectance = obj.reflectances(reflectanceIndex);
                 
                 % assign the spectrum
-                mitsubaElement.pluginType = 'diffuse';
+                pbrtElement.type = 'matte';
+                pbrtElement.parameters = [];
                 switch reflectance.type
                     case 'spectrum'
                         resolvedSpectrum = obj.resolveResource(reflectance.value, hints);
-                        mitsubaElement.setProperty('reflectance', 'spectrum', resolvedSpectrum);
+                        pbrtElement.setParameter('Kd', 'spectrum', resolvedSpectrum);
                     case 'texture'
                         textureId = VseMitsubaDiffuseMaterials.idForTexture(reflectance.value);
-                        mitsubaElement.append(MMitsubaProperty.withData('', 'ref', ...
-                            'id', textureId, ...
-                            'name', 'reflectance'));
+                        pbrtElement.setParameter('Kd', 'texture', textureId);
                 end
             end
         end
@@ -108,8 +118,8 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
     
     methods (Static)
         function id = idForTexture(fileName)
-            [~, fileBase, fileExt] = fileparts(fileName);
-            id = [fileBase '_' fileExt(2:end)];
+            [~, fileBase] = fileparts(fileName);
+            id = [fileBase '_' 'texture'];
         end
     end
 end

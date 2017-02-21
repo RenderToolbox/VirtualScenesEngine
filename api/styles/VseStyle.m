@@ -24,7 +24,7 @@ classdef VseStyle < handle
         
         
         %% Copy resource to the "resources" folder for the given RTB hints.
-        function resolvedName = resolveResource(obj, resourceName, hints, varargin)
+        function [resolvedName, resolvedFullPath] = resolveResource(obj, resourceName, hints, varargin)
             workingFolder = rtbWorkingFolder( ...
                 'rendererSpecific', false, ...
                 'hints', hints);
@@ -35,6 +35,18 @@ classdef VseStyle < handle
                 'outputFolder', workingFolder, ...
                 'outputPrefix', 'resources', ...
                 varargin{:});
+            resolvedFullPath = fullfile(workingFolder, resolvedName);
+        end
+        
+        
+        %% Recode an image resource as an exr file.
+        function [recodedName, recodedFullPath] = recodeImage(obj, resoiurceFullPath, hints, varargin)
+            [~, ~, resourceExt] = fileparts(resoiurceFullPath);
+            recodedFullPath = mexximpRecodeImage(resoiurceFullPath, ...
+                'toReplace', {resourceExt(2:end)}, ...
+                'targetFormat', 'exr', ...
+                varargin{:});
+            recodedName = rtbGetWorkingRelativePath(recodedFullPath, 'hints', hints);
         end
         
         

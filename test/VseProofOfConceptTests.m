@@ -72,28 +72,43 @@ classdef VseProofOfConceptTests < matlab.unittest.TestCase
             styles.none = {};
             styles.colorsAndTextures = {blessAreaLights, redBlueLights, colorCheckerDiffuse, texturedDiffuse};
         end
-    end
-    
-    methods (Test)
-        function testProofOfConceptMitsuba(testCase)
-            hints.fov = deg2rad(60);
-            hints.imageHeight = 120;
-            hints.imageWidth = 180;
-            hints.workingFolder = testCase.workingFolder();
-            hints.renderer = 'Mitsuba';
-            
+        
+        function styles = makePbrtStyles(testCase)
             aioPrefs = testCase.makeAioPrefs();
-            [inner, outer] = testCase.makeModels();
-            styles = testCase.makeMitsubaStyles();
             
-            [~, ~, ~, recipes] = vseProofOfConept( ...
-                'hints', hints, ...
-                'aioPrefs', aioPrefs, ...
-                'outer', outer, ...
-                'inner', inner, ...
-                'styles', styles, ...
-                'showFigures', false);
+            blessAreaLights = VsePbrtAreaLights( ...
+                'name', 'blessAreaLights', ...
+                'applyToInnerModels', false);
             
+            %             redBlueLights = VseMitsubaEmitterSpectra( ...
+            %                 'name', 'redBlueLights', ...
+            %                 'pluginType', 'area', ...
+            %                 'propertyName', 'radiance');
+            %             redBlueLights.addSpectrum('300:0.2 800:0.0');
+            %             redBlueLights.addSpectrum('300:0.0 800:0.2');
+            %
+            %             colorCheckerFiles = aioGetFiles('Reflectances', 'ColorChecker', ...
+            %                 'aioPrefs', aioPrefs, ...
+            %                 'fullPaths', false);
+            %             colorCheckerDiffuse = VseMitsubaDiffuseMaterials( ...
+            %                 'name', 'colorCheckerDiffuse', ...
+            %                 'applyToInnerModels', false);
+            %             colorCheckerDiffuse.addManySpectra(colorCheckerFiles);
+            %
+            %             textureFiles = aioGetFiles('Textures', 'OpenGameArt', ...
+            %                 'aioPrefs', aioPrefs, ...
+            %                 'fullPaths', false);
+            %             texturedDiffuse = VseMitsubaDiffuseMaterials( ...
+            %                 'name', 'texturedDiffuse', ...
+            %                 'applyToOuterModels', false);
+            %             texturedDiffuse.addManyTextures(textureFiles);
+            
+            styles.none = {};
+            styles.colorsAndTextures = {blessAreaLights};
+            %styles.colorsAndTextures = {blessAreaLights, redBlueLights, colorCheckerDiffuse, texturedDiffuse};
+        end
+        
+        function sanityCheckRecipes(testCase, inner, outer, styles, recipes)
             % should have a recipe for each inner-outer combo
             nOuter = numel(outer);
             nInner = numel(inner);
@@ -128,5 +143,52 @@ classdef VseProofOfConceptTests < matlab.unittest.TestCase
                 end
             end
         end
+    end
+    
+    methods (Test)
+        function testProofOfConceptMitsuba(testCase)
+            hints.fov = deg2rad(60);
+            hints.imageHeight = 120;
+            hints.imageWidth = 180;
+            hints.workingFolder = testCase.workingFolder();
+            hints.renderer = 'Mitsuba';
+            
+            aioPrefs = testCase.makeAioPrefs();
+            [inner, outer] = testCase.makeModels();
+            styles = testCase.makeMitsubaStyles();
+            
+            [~, ~, ~, recipes] = vseProofOfConept( ...
+                'hints', hints, ...
+                'aioPrefs', aioPrefs, ...
+                'outer', outer, ...
+                'inner', inner, ...
+                'styles', styles, ...
+                'showFigures', false);
+            
+            testCase.sanityCheckRecipes(inner, outer, styles, recipes);
+        end
+        
+        function testProofOfConceptPbrt(testCase)
+            hints.fov = deg2rad(60);
+            hints.imageHeight = 120;
+            hints.imageWidth = 180;
+            hints.workingFolder = testCase.workingFolder();
+            hints.renderer = 'PBRT';
+            
+            aioPrefs = testCase.makeAioPrefs();
+            [inner, outer] = testCase.makeModels();
+            styles = testCase.makePbrtStyles();
+            
+            [~, ~, ~, recipes] = vseProofOfConept( ...
+                'hints', hints, ...
+                'aioPrefs', aioPrefs, ...
+                'outer', outer, ...
+                'inner', inner, ...
+                'styles', styles, ...
+                'showFigures', false);
+            
+            testCase.sanityCheckRecipes(inner, outer, styles, recipes);
+        end
+        
     end
 end

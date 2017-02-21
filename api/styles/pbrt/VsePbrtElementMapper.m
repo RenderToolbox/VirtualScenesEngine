@@ -4,11 +4,12 @@ classdef VsePbrtElementMapper < VseElementMapper
     methods
         function buildElementMap(obj, scene, nativeScene)
             obj.clear();
-            obj.mapNested(nativeScene);
+            obj.mapNested(nativeScene.overall);
+            obj.mapNested(nativeScene.world);
         end
         
         function mapNested(obj, pbrtNode)
-            if ~isempty(pbrtNode.extra)
+            if isprop(pbrtNode, 'extra') && ~isempty(pbrtNode.extra)
                 obj.put(pbrtNode.extra, pbrtNode);
             end
             

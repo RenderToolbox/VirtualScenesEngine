@@ -92,6 +92,7 @@ classdef VseMitsubaDiffuseMaterials < VseStyle
                 
                 % assign the spectrum
                 mitsubaElement.pluginType = 'diffuse';
+                mitsubaElement.nested = {};
                 switch reflectance.type
                     case 'spectrum'
                         resolvedSpectrum = obj.resolveResource(reflectance.value, hints);

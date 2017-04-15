@@ -27,10 +27,11 @@ classdef VseStyle < handle
         
         %% Copy resource to the "resources" folder for the given RTB hints.
         function [resolvedName, resolvedFullPath] = resolveResource(obj, resourceName, hints, varargin)
+            workingFolder = rtbWorkingFolder( ...
+                'rendererSpecific', false, ...
+                'hints', hints);
             if isempty(obj.resourceFolder)
-                resourceFolder = rtbWorkingFolder( ...
-                    'rendererSpecific', false, ...
-                    'hints', hints);
+                resourceFolder = workingFolder;
             else
                 resourceFolder = obj.resourceFolder;
             end

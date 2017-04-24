@@ -19,18 +19,27 @@ classdef VseMitsubaEmitterSpectra < VseStyle
         end
         
         function addSpectrum(obj, value)
+            emitter = struct('type', 'spectrum', 'value', value);
             if isempty(obj.spectra)
-                obj.spectra = {value};
+                obj.spectra = {emitter};
             else
-                obj.spectra{end+1} = value;
+                obj.spectra{end+1} = emitter;
             end
         end
         
-        
-        % Choose a reflectance for each selected element.
+         function addManySpectra(obj, values)
+            for vv = 1:numel(values)
+                obj.addSpectrum(values{vv});
+            end
+        end
+ 
+        % Choose a spectrum for each selected element.
         function scene = applyToSceneElements(obj, scene, elements, hints)
             
             nSpectra = numel(obj.spectra);
+            if 0 == nSpectra
+                return;
+            end
             
             nElements = numel(elements);
             for ee = 1:nElements
@@ -45,11 +54,11 @@ classdef VseMitsubaEmitterSpectra < VseStyle
                 % choose a spectrum
                 spectrumIndex = 1 + mod(ee - 1, nSpectra);
                 spectrum = obj.spectra{spectrumIndex};
-                resolvedSpectrum = obj.resolveResource(spectrum, hints);
+                resolvedSpectrum = obj.resolveResource(spectrum.value, hints);
                 
                 % assign the spectrum
                 emitter.setProperty(obj.propertyName, 'spectrum', resolvedSpectrum);
             end
-        end
+        end   
     end
 end

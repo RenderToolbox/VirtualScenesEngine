@@ -1,3 +1,5 @@
+[![Build Status](http://brainard-jenkins.psych.upenn.edu/buildStatus/icon?job=VirtualScenesEngine)](http://brainard-jenkins.psych.upenn.edu/job/VirtualScenesEngine/)
+
 # VirtualScenesEngine 
 Leverage [VirtualScenesAssets](https://github.com/RenderToolbox/VirtualScenesAssets) into myriad scenes that we can render and analyze.
 
